@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "894681303997-qdjv17lkqucrk9p0shbd2bt11i6shs9s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hub.dairy",
+            "certificate_hash": "4fe130f4b0f984d6fd948fd6deae7ad6300103df"
+          }
+        },
+        {
           "client_id": "894681303997-ipvq5lsgntsf0h8jdc9cefkkf1h0hm1m.apps.googleusercontent.com",
           "client_type": 3
         }

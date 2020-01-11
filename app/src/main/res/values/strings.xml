@@ -1,3 +1,38 @@
 <resources>
     <string name="app_name">Dairy</string>
+    <string name="title_activity_test">test</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="log_out">Log Out</string>
+    <string name="search">Search</string>
+    <string name="profile">Profile</string>
+    <string name="name">Name</string>
+    <string name="test_name">Test Name</string>
+    <string name="breed">Breed</string>
+    <string name="jersey">Jersey</string>
+    <string name="add_animal">Add Animal</string>
+    <string name="label_female">Female</string>
+    <string name="label_gender">Gender</string>
+    <string name="label_male">Male</string>
+    <string name="label_select_image">Select Image</string>
+    <string name="animal_name">Animal Name</string>
+    <string name="enter_animal_name">Enter Animal Name</string>
+    <string name="animal_breed">Animal Breed</string>
+    <string name="enter_breed">Enter Animal Breed</string>
+    <string name="location">Current Animal Location</string>
+    <string name="enter_animal_location">Enter Animal Location</string>
+    <string name="save_info">Save Animal Information</string>
+    <string name="add_animal_image">Add Animal image</string>
+    <string name="optional">Optional</string>
+    <string name="gender">Choose Animal Gender</string>
+    <string name="add_category">Add Category</string>
+    <string name="select_a_category">Select a Category</string>
+
+    <string-array name="gender">
+        <item>Female</item>
+        <item>Male</item>
+    </string-array>
 </resources>
