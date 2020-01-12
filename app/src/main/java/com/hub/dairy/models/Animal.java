@@ -5,13 +5,13 @@ import android.os.Parcelable;
 
 public class Animal implements Parcelable {
 
-    private String id, name, breed, location, gender, regDate, imageUrl;
+    private String id, name, breed, location, gender, regDate, imageUrl, category, status;
 
     public Animal() {
     }
 
     public Animal(String id, String name, String breed, String location, String gender,
-                  String regDate, String imageUrl) {
+                  String regDate, String imageUrl, String category, String status) {
         this.id = id;
         this.name = name;
         this.breed = breed;
@@ -19,6 +19,8 @@ public class Animal implements Parcelable {
         this.gender = gender;
         this.regDate = regDate;
         this.imageUrl = imageUrl;
+        this.category = category;
+        this.status = status;
     }
 
     protected Animal(Parcel in) {
@@ -29,6 +31,8 @@ public class Animal implements Parcelable {
         gender = in.readString();
         regDate = in.readString();
         imageUrl = in.readString();
+        category = in.readString();
+        status = in.readString();
     }
 
     @Override
@@ -40,6 +44,8 @@ public class Animal implements Parcelable {
         dest.writeString(gender);
         dest.writeString(regDate);
         dest.writeString(imageUrl);
+        dest.writeString(category);
+        dest.writeString(status);
     }
 
     @Override
@@ -86,4 +92,8 @@ public class Animal implements Parcelable {
     public String getImageUrl() {
         return imageUrl;
     }
+
+    public String getCategory(){return category;}
+
+    public String getStatus(){return status;}
 }

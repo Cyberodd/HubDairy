@@ -11,12 +11,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:labelFor="@id/animal_name_text_layout"
+            android:labelFor="@id/inputName"
             android:layout_marginBottom="4dp"
             android:text="@string/animal_name" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/animal_name_text_layout"
+            android:id="@+id/inputName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -36,12 +36,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:labelFor="@id/animal_breed_text_layout"
+            android:labelFor="@id/inputBreed"
             android:layout_marginBottom="4dp"
             android:text="@string/animal_breed" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/animal_breed_text_layout"
+            android:id="@+id/inputBreed"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,13 +61,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:labelFor="@id/animal_location_text_layout"
+            android:labelFor="@id/inputLocation"
             android:layout_marginBottom="4dp"
             android:text="@string/location" />
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/animal_location_text_layout"
+            android:id="@+id/inputLocation"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -83,6 +83,18 @@
                 android:textColor="?colorAccent" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_background">
+            <Spinner
+                android:id="@+id/statusSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                style="@style/Widget.AppCompat.DropDownItem.Spinner" />
+        </RelativeLayout>
 
     </LinearLayout>
 </merge>

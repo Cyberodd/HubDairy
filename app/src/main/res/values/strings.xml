@@ -30,9 +30,15 @@
     <string name="gender">Choose Animal Gender</string>
     <string name="add_category">Add Category</string>
     <string name="select_a_category">Select a Category</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="enter_category_name">Enter Category Name</string>
+    <string name="_add_category">ADD CATEGORY</string>
+    <string name="choose_status">Choose Status</string>
 
-    <string-array name="gender">
-        <item>Female</item>
-        <item>Male</item>
+    <string-array name="status">
+        <item>Choose One</item>
+        <item>Born on Farm</item>
+        <item>Purchased</item>
     </string-array>
 </resources>

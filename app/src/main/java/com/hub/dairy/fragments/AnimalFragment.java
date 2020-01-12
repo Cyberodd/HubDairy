@@ -107,6 +107,8 @@ public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClic
                 mAnimals.addAll(queryDocumentSnapshots.toObjects(Animal.class));
                 animalRv.setAdapter(mAnimalAdapter);
                 mAnimalAdapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(getContext(), "Empty", Toast.LENGTH_SHORT).show();
             }
         });
     }
