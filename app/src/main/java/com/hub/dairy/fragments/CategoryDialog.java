@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hub.dairy.R;
 import com.hub.dairy.models.Category;
@@ -26,10 +30,11 @@ import static com.hub.dairy.helpers.Constants.CATEGORIES;
 
 public class CategoryDialog extends AppCompatDialogFragment {
 
+    private static final String TAG = "CategoryDialog";
     private EditText mCategoryName;
-    private CollectionReference colRef;
     private String categoryId;
     private CategoryInterface listener;
+    private DocumentReference docRef;
 
     @NonNull
     @Override
@@ -39,9 +44,17 @@ public class CategoryDialog extends AppCompatDialogFragment {
         @SuppressLint("InflateParams")
         View view = inflater.inflate(R.layout.category_layout, null);
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        colRef = database.collection(CATEGORIES);
+        CollectionReference colRef = database.collection(CATEGORIES);
         categoryId = colRef.document().getId();
+        if (user != null){
+            String userId = user.getUid();
+            docRef = colRef.document(userId);
+        } else {
+            Log.d(TAG, "onCreateDialog: User not logged in");
+        }
 
         Button save = view.findViewById(R.id.btnSave);
         Button cancel = view.findViewById(R.id.btnCancel);
@@ -62,7 +75,7 @@ public class CategoryDialog extends AppCompatDialogFragment {
         String categoryName = mCategoryName.getText().toString().trim();
         if (!categoryName.isEmpty()) {
             Category category = new Category(categoryId, categoryName);
-            colRef.document(categoryId).set(category)
+            docRef.collection(CATEGORIES).document(categoryId).set(category)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             listener.notifyUpdate();

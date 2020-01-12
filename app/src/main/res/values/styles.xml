@@ -14,6 +14,10 @@
         <item name="android:letterSpacing">0.0225</item>
     </style>
 
+    <style name="AppTheme.WhiteAccent">
+        <item name="colorAccent">@color/colorPink</item> <!-- Whatever color you want-->
+    </style>
+
     <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
         <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>

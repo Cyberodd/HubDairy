@@ -3,6 +3,10 @@ package com.hub.dairy;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
@@ -15,12 +19,16 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -43,36 +51,48 @@ import static com.hub.dairy.helpers.Constants.ANIMALS;
 import static com.hub.dairy.helpers.Constants.CATEGORIES;
 import static com.hub.dairy.helpers.Constants.DATE_FORMAT;
 import static com.hub.dairy.helpers.Constants.IMAGE_URL;
+import static com.hub.dairy.helpers.Constants.UPLOADS;
 
 public class AnimalActivity extends AppCompatActivity implements CategoryDialog.CategoryInterface {
 
+    private static final String TAG = "AnimalActivity";
     private Toolbar mToolbar;
     private EditText mName, mBreed, mLocation;
     private CircleImageView mAnimalImage;
     private String gender, animalId, mDownloadUrl;
-    private Button mSaveInfo, mAddCategory;
+    private Button mSaveInfo;
     private RadioGroup mRadioGroup;
     private RadioButton mRdMale, mRdFemale;
     private int IMAGE_REQUEST_CODE = 1001;
     private LinearLayout displayText;
     private StorageReference mStorageReference;
-    private CollectionReference colRef, categoryRef;
+    private CollectionReference colRef;
     private ProgressBar mProgress;
     private Uri imageUri;
     private Spinner mSpinner, mStatus;
     private List<Category> mCategories = new ArrayList<>();
     private TextInputLayout inputName, inputBreed, inputLocation;
+    private DocumentReference docRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_animal);
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        colRef = database.collection(ANIMALS);
-        categoryRef = database.collection(CATEGORIES);
-        animalId = colRef.document().getId();
-        mStorageReference = FirebaseStorage.getInstance().getReference("uploads");
+        mStorageReference = FirebaseStorage.getInstance().getReference(UPLOADS);
+        CollectionReference categoryRef = database.collection(CATEGORIES);
+
+        if (user != null) {
+            String userId = user.getUid();
+            colRef = database.collection(ANIMALS).document(userId).collection(ANIMALS);
+            docRef = categoryRef.document(userId);
+            animalId = colRef.document().getId();
+        } else {
+            Log.d(TAG, "onCreate: User not logged in");
+        }
 
         initViews();
 
@@ -82,8 +102,6 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
         mAnimalImage.setOnClickListener(v -> openGallery());
 
         mSaveInfo.setOnClickListener(v -> getAnimalInfo());
-
-        mAddCategory.setOnClickListener(v -> openDialog());
 
         updateCategories();
 
@@ -118,14 +136,13 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
     }
 
     public void updateCategories() {
-        categoryRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+        docRef.collection(CATEGORIES).get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
                 mCategories.clear();
                 mCategories.addAll(queryDocumentSnapshots.toObjects(Category.class));
                 loadSpinner(mCategories);
             } else {
-                Toast.makeText(this, "Unable to categories right now",
-                        Toast.LENGTH_SHORT).show();
+                openDialog();
             }
         });
     }
@@ -283,7 +300,7 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
         displayText = findViewById(R.id.displayText);
         mSaveInfo = findViewById(R.id.btnSaveInfo);
         mProgress = findViewById(R.id.uploadProgress);
-        mAddCategory = findViewById(R.id.btnAddCategory);
+//        mAddCategory = findViewById(R.id.btnAddCategory);
         mSpinner = findViewById(R.id.categorySpinner);
         mStatus = findViewById(R.id.statusSpinner);
         inputName = findViewById(R.id.inputName);
@@ -294,5 +311,21 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
     @Override
     public void notifyUpdate() {
         updateCategories();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.animal_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_add_category) {
+            openDialog();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

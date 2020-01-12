@@ -35,6 +35,22 @@
     <string name="enter_category_name">Enter Category Name</string>
     <string name="_add_category">ADD CATEGORY</string>
     <string name="choose_status">Choose Status</string>
+    <string name="add_transaction">Add Transaction</string>
+    <string name="hint_enter_source">Enter Source</string>
+    <string name="hint_transaction">Transaction</string>
+    <string name="hint_enter_amount">Enter Amount</string>
+    <string name="search_animal_name">Search Animal Name</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="register">Register</string>
+    <string name="already_have_an_account">Already have an Account?</string>
+    <string name="full_name">Full Name</string>
+    <string name="no_account">Don\'t have an Account?</string>
+    <string name="farm_name">Farm Name</string>
+    <string name="animal_count">No of Animals</string>
+    <string name="info_text">(If you category doesn\'t appear, click the add icon on the navbar to add one)</string>
 
     <string-array name="status">
         <item>Choose One</item>

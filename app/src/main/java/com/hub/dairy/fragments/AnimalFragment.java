@@ -2,24 +2,23 @@ package com.hub.dairy.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.hub.dairy.AnimalActivity;
-import com.hub.dairy.AnimalDetailActivity;
+import com.hub.dairy.DetailActivity;
 import com.hub.dairy.R;
 import com.hub.dairy.adapters.AnimalAdapter;
 import com.hub.dairy.models.Animal;
@@ -31,11 +30,9 @@ import static com.hub.dairy.helpers.Constants.ANIMALS;
 
 public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClick {
 
+    private static final String TAG = "AnimalFragment";
     private RecyclerView animalRv;
     private List<Animal> mAnimals = new ArrayList<>();
-    private FloatingActionButton mFab, mAddAnimal;
-    private boolean isFabOpen = true;
-    private TextView txtAddAnimal;
     private CollectionReference animalRef;
     private AnimalAdapter mAnimalAdapter;
 
@@ -52,47 +49,17 @@ public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClic
         super.onActivityCreated(savedInstanceState);
 
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        animalRef = database.collection(ANIMALS);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null){
+            animalRef = database.collection(ANIMALS).document(user.getUid()).collection(ANIMALS);
+        } else {
+            Log.d(TAG, "onActivityCreated: User not logged in");
+        }
 
         mAnimalAdapter = new AnimalAdapter(mAnimals, this);
 
         loadAnimals();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        mFab.setOnClickListener(v -> displayAnimations());
-
-        mAddAnimal.setOnClickListener(v -> navigateToAddAnimal());
-    }
-
-    private void navigateToAddAnimal() {
-        Intent intent = new Intent(getContext(), AnimalActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    private void displayAnimations() {
-        if (!isFabOpen)
-            closeFab();
-        else
-            openFab();
-    }
-
-    private void openFab() {
-        isFabOpen = false;
-        mAddAnimal.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-        txtAddAnimal.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-        txtAddAnimal.setVisibility(View.VISIBLE);
-    }
-
-    private void closeFab() {
-        isFabOpen = true;
-        mAddAnimal.animate().translationY(0.0F);
-        txtAddAnimal.animate().translationY(0.0F);
-        txtAddAnimal.setVisibility(View.GONE);
     }
 
     private void loadAnimals() {
@@ -108,21 +75,18 @@ public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClic
                 animalRv.setAdapter(mAnimalAdapter);
                 mAnimalAdapter.notifyDataSetChanged();
             } else {
-                Toast.makeText(getContext(), "Empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "No animals yet", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void initViews(View view) {
         animalRv = view.findViewById(R.id.animalRecycler);
-        mFab = view.findViewById(R.id.btnFab);
-        mAddAnimal = view.findViewById(R.id.btnAddAnimal);
-        txtAddAnimal = view.findViewById(R.id.txtAddAnimal);
     }
 
     @Override
     public void onAnimalClick(Animal animal) {
-        Intent intent = new Intent(getContext(), AnimalDetailActivity.class);
+        Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtra("animal", animal);
         startActivity(intent);
     }

@@ -5,4 +5,6 @@ public class Constants {
     public static final String DATE_FORMAT = "dd,MMM,yyyy";
     public static final String ANIMALS = "animals";
     public static final String CATEGORIES = "categories";
+    public static final String USERS = "users";
+    public static final String UPLOADS = "uploads";
 }
