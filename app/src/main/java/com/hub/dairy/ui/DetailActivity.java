@@ -1,74 +1,61 @@
 package com.hub.dairy.ui;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hub.dairy.R;
+import com.hub.dairy.fragments.MeatDialog;
+import com.hub.dairy.fragments.MilkDialog;
 import com.hub.dairy.models.Animal;
-import com.hub.dairy.models.MilkProduce;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.hub.dairy.helpers.Constants.DATE_FORMAT;
-import static com.hub.dairy.helpers.Constants.MILK_PRODUCE;
+import static com.hub.dairy.helpers.Constants.ANIMALS;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements MilkDialog.MilkInterface,
+        MeatDialog.MeatInterface {
 
     private static final String TAG = "DetailActivity";
     private Toolbar mToolbar;
     private Animal mAnimal;
-    private String animalId, animalName, userId, date;
-    private TextInputLayout txtQuantity;
-    private TextView mQuantity, name, gender, location, regDate, breed, category, status;
+    private String animalName, animalId;
+    private TextView name, gender, location, regDate, breed, category, status;
     private CircleImageView image;
-    private CardView mIsFemale;
-    private Button mSubmit;
-    private CollectionReference milkRef;
-    private ProgressBar mProgress;
-    private int produceCount;
+    private Button mShowDialog;
+    private FirebaseFirestore mDatabase;
+    private FirebaseUser mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        mDatabase = FirebaseFirestore.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-        FirebaseFirestore database = FirebaseFirestore.getInstance();
-        date = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(new Date());
-        if (user != null) {
-            userId = user.getUid();
-            milkRef = database.collection(MILK_PRODUCE).document(userId).collection(MILK_PRODUCE);
-        } else {
-            Log.d(TAG, "onCreate: User not logged in");
-        }
+        mUser = auth.getCurrentUser();
 
         Intent intent = getIntent();
         mAnimal = intent.getParcelableExtra("animal");
         if (mAnimal != null) {
-            animalId = mAnimal.getId();
             animalName = mAnimal.getName();
+            animalId = mAnimal.getId();
         } else {
             Log.d(TAG, "onCreate: No animal passed");
         }
@@ -79,62 +66,9 @@ public class DetailActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle(animalName);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        mShowDialog.setOnClickListener(v -> openDialog());
+
         displayAnimalInfo();
-
-        getMilkProduceEntries();
-
-        mSubmit.setOnClickListener(v -> submitQuantity());
-    }
-
-    private void getMilkProduceEntries() {
-        milkRef.document(animalId).collection(date)
-                .get().addOnSuccessListener(queryDocumentSnapshots -> {
-            if (!queryDocumentSnapshots.isEmpty()) {
-                produceCount = queryDocumentSnapshots.size();
-            } else {
-                produceCount = 0;
-            }
-        });
-    }
-
-    private void submitQuantity() {
-        String quantity = mQuantity.getText().toString().trim();
-        if (!quantity.isEmpty()) {
-            diSubmit(quantity);
-        } else {
-            txtQuantity.setError("Please input quantity of milk produced first");
-        }
-    }
-
-    private void diSubmit(String quantity) {
-        mProgress.setVisibility(View.VISIBLE);
-        String milkProdId = milkRef.document().getId();
-        MilkProduce milkProduce = new MilkProduce(userId, animalId, animalName, quantity, date);
-        if (produceCount < 2){
-            milkRef.document(animalId)
-                    .collection(date)
-                    .document(milkProdId).set(milkProduce).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    mProgress.setVisibility(View.GONE);
-                    mQuantity.setText("");
-                    Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
-                } else {
-                    mProgress.setVisibility(View.GONE);
-                    mQuantity.setText("");
-                    Toast.makeText(this, "An error occurred",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }).addOnFailureListener(e -> {
-                mProgress.setVisibility(View.GONE);
-                mQuantity.setText("");
-                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            });
-        } else {
-            mProgress.setVisibility(View.GONE);
-            mQuantity.setText("");
-            Toast.makeText(this, "Can't enter more than 2 entries on the same day",
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void displayAnimalInfo() {
@@ -150,11 +84,6 @@ public class DetailActivity extends AppCompatActivity {
                 .placeholder(R.drawable.ic_loading)
                 .error(R.drawable.ic_error_photo)
                 .into(image);
-        if (mAnimal.getGender().equals("Female")) {
-            mIsFemale.setVisibility(View.VISIBLE);
-        } else {
-            mIsFemale.setVisibility(View.GONE);
-        }
     }
 
     private void initViews() {
@@ -167,11 +96,7 @@ public class DetailActivity extends AppCompatActivity {
         breed = findViewById(R.id.animal_breed);
         category = findViewById(R.id.animal_category);
         status = findViewById(R.id.animal_status);
-        mIsFemale = findViewById(R.id.isFemale);
-        mSubmit = findViewById(R.id.btnSubmit);
-        txtQuantity = findViewById(R.id.textQuantity);
-        mQuantity = findViewById(R.id.quantity);
-        mProgress = findViewById(R.id.produceProgress);
+        mShowDialog = findViewById(R.id.btnShowDialog);
     }
 
     @Override
@@ -184,5 +109,78 @@ public class DetailActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         supportFinishAfterTransition();
+    }
+
+    private void openDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.produce_layout);
+        initDialogViews(dialog);
+        dialog.show();
+    }
+
+    private void initDialogViews(Dialog dialog) {
+        Button btnMeat = dialog.findViewById(R.id.btnMeat);
+        Button btnMilk = dialog.findViewById(R.id.btnMilk);
+
+        if (mAnimal.getGender().equals("Male")){
+            btnMilk.setVisibility(View.GONE);
+        } else {
+            btnMilk.setVisibility(View.VISIBLE);
+        }
+
+        btnMeat.setOnClickListener(v -> openMeatDialog(dialog));
+
+        btnMilk.setOnClickListener(v -> openMilkDialog(dialog));
+    }
+
+    private void openMilkDialog(Dialog dialog) {
+        MilkDialog milkDialog = new MilkDialog();
+        Bundle args = new Bundle();
+        args.putParcelable("animal", mAnimal);
+        milkDialog.setArguments(args);
+        dialog.dismiss();
+        milkDialog.show(getSupportFragmentManager(), "MilkDialog");
+    }
+
+    private void openMeatDialog(Dialog dialog) {
+        MeatDialog meatDialog = new MeatDialog();
+        Bundle args = new Bundle();
+        args.putParcelable("animal", mAnimal);
+        meatDialog.setArguments(args);
+        dialog.dismiss();
+        meatDialog.show(getSupportFragmentManager(), "MeatDialog");
+    }
+
+    @Override
+    public void notifyInput() {
+        Toast.makeText(this, "Produce added", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void isSuccess() {
+        removeAnimalFromDb();
+    }
+
+    private void removeAnimalFromDb() {
+        if (mUser != null) {
+            CollectionReference animalRef = mDatabase.collection(ANIMALS)
+                    .document(mUser.getUid()).collection(ANIMALS);
+            animalRef.document(animalId).delete().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    toMainActivity();
+                } else {
+                    Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Log.d(TAG, "removeAnimalFromDb: User not logged in");
+        }
+    }
+
+    private void toMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -57,7 +57,15 @@
     <string name="registration_date">Registration Date</string>
     <string name="milk_produced">Add Milk Produced (Today)</string>
     <string name="quantity">Quantity Produced (Litres)</string>
+    <string name="_quantity">Quantity Produced (Kgs)</string>
     <string name="submit">Submit</string>
+    <string name="milk_produce">Milk Produce</string>
+    <string name="meat_produce">Meat Produce</string>
+    <string name="select_action">Please Select an Option</string>
+    <string name="option_info">Tap on any of the Options below to add your preferred today\'s produce for your selected animal</string>
+    <string name="add_produce">Add Produce</string>
+    <string name="meat_produced">Add Meat Produced</string>
+    <string name="tap_here">Tap Here</string>
 
     <string-array name="status">
         <item>Choose One</item>

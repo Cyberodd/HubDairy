@@ -301,7 +301,6 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
         displayText = findViewById(R.id.displayText);
         mSaveInfo = findViewById(R.id.btnSaveInfo);
         mProgress = findViewById(R.id.uploadProgress);
-//        mAddCategory = findViewById(R.id.btnAddCategory);
         mSpinner = findViewById(R.id.categorySpinner);
         mStatus = findViewById(R.id.statusSpinner);
         inputName = findViewById(R.id.inputName);

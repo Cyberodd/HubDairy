@@ -8,4 +8,5 @@ public class Constants {
     public static final String USERS = "users";
     public static final String UPLOADS = "uploads";
     public static final String MILK_PRODUCE = "milkProduce";
+    public static final String MEAT_PRODUCE = "meatProduce";
 }

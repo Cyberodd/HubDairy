@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -35,6 +36,7 @@ public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClic
     private List<Animal> mAnimals = new ArrayList<>();
     private CollectionReference animalRef;
     private AnimalAdapter mAnimalAdapter;
+    private ProgressBar progress;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +65,7 @@ public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClic
     }
 
     private void loadAnimals() {
+        progress.setVisibility(View.VISIBLE);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         animalRv.setHasFixedSize(true);
         animalRv.setLayoutManager(manager);
@@ -74,7 +77,9 @@ public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClic
                 mAnimals.addAll(queryDocumentSnapshots.toObjects(Animal.class));
                 animalRv.setAdapter(mAnimalAdapter);
                 mAnimalAdapter.notifyDataSetChanged();
+                progress.setVisibility(View.GONE);
             } else {
+                progress.setVisibility(View.GONE);
                 Toast.makeText(getContext(), "No animals yet", Toast.LENGTH_SHORT).show();
             }
         });
@@ -82,6 +87,7 @@ public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClic
 
     private void initViews(View view) {
         animalRv = view.findViewById(R.id.animalRecycler);
+        progress = view.findViewById(R.id.progress);
     }
 
     @Override
