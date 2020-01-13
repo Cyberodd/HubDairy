@@ -1,5 +1,5 @@
 
-package com.hub.dairy;
+package com.hub.dairy.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.hub.dairy.R;
 import com.hub.dairy.adapters.TabPagerAdapter;
 import com.hub.dairy.fragments.AnimalFragment;
 import com.hub.dairy.fragments.ReportsFragment;

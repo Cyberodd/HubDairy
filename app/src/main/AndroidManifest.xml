@@ -15,16 +15,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ProfileActivity"
+        <activity android:name=".ui.ProfileActivity"
             android:launchMode="singleTop"/>
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".TransactionActivity"
+        <activity android:name=".ui.RegisterActivity" />
+        <activity android:name=".ui.LoginActivity" />
+        <activity android:name=".ui.TransactionActivity"
             android:launchMode="singleTop"/>
-        <activity android:name=".DetailActivity" />
-        <activity android:name=".AnimalActivity" />
+        <activity android:name=".ui.DetailActivity" />
+        <activity android:name=".ui.AnimalActivity" />
         <activity
-            android:name=".MainActivity">
+            android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

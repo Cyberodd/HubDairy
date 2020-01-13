@@ -1,4 +1,4 @@
-package com.hub.dairy;
+package com.hub.dairy.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -32,6 +32,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.hub.dairy.R;
 import com.hub.dairy.fragments.CategoryDialog;
 import com.hub.dairy.models.Animal;
 import com.hub.dairy.models.Category;

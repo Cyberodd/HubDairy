@@ -1,4 +1,4 @@
-package com.hub.dairy;
+package com.hub.dairy.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.hub.dairy.R;
 import com.hub.dairy.models.User;
 
 import static com.hub.dairy.helpers.Constants.USERS;

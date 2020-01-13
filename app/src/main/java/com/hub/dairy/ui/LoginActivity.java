@@ -1,4 +1,4 @@
-package com.hub.dairy;
+package com.hub.dairy.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.hub.dairy.R;
 
 public class LoginActivity extends AppCompatActivity {
 

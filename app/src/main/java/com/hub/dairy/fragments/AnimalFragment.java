@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.hub.dairy.DetailActivity;
+import com.hub.dairy.ui.DetailActivity;
 import com.hub.dairy.R;
 import com.hub.dairy.adapters.AnimalAdapter;
 import com.hub.dairy.models.Animal;

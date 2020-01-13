@@ -51,6 +51,13 @@
     <string name="farm_name">Farm Name</string>
     <string name="animal_count">No of Animals</string>
     <string name="info_text">(If you category doesn\'t appear, click the add icon on the navbar to add one)</string>
+    <string name="_location">Location</string>
+    <string name="category">Category</string>
+    <string name="status">Status</string>
+    <string name="registration_date">Registration Date</string>
+    <string name="milk_produced">Add Milk Produced (Today)</string>
+    <string name="quantity">Quantity Produced (Litres)</string>
+    <string name="submit">Submit</string>
 
     <string-array name="status">
         <item>Choose One</item>

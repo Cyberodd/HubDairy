@@ -1,9 +1,11 @@
-package com.hub.dairy;
+package com.hub.dairy.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
+
+import com.hub.dairy.R;
 
 import java.util.Objects;
 
