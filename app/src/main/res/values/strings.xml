@@ -24,7 +24,7 @@
     <string name="enter_breed">Enter Animal Breed</string>
     <string name="location">Current Animal Location</string>
     <string name="enter_animal_location">Enter Animal Location</string>
-    <string name="save_info">Save Animal Information</string>
+    <string name="save_info">Save Animal Info</string>
     <string name="add_animal_image">Add Animal image</string>
     <string name="optional">Optional</string>
     <string name="gender">Choose Animal Gender</string>
@@ -39,7 +39,7 @@
     <string name="hint_enter_source">Enter Source</string>
     <string name="hint_transaction">Transaction</string>
     <string name="hint_enter_amount">Enter Amount</string>
-    <string name="search_animal_name">Search Animal Name</string>
+    <string name="search_animal_name">Search Animal (by name)</string>
     <string name="login">Login</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -66,10 +66,20 @@
     <string name="add_produce">Add Produce</string>
     <string name="meat_produced">Add Meat Produced</string>
     <string name="tap_here">Tap Here</string>
+    <string name="trans_info">Select a Transaction type from the dropdown list below</string>
+    <string name="search_date">Search Date</string>
+    <string name="enter_cash">Enter Cash</string>
+    <string name="enter_date">Enter Date</string>
 
     <string-array name="status">
         <item>Choose One</item>
         <item>Born on Farm</item>
         <item>Purchased</item>
+    </string-array>
+
+    <string-array name="type">
+        <item>Choose One</item>
+        <item>Milk Sale</item>
+        <item>Animal Sale</item>
     </string-array>
 </resources>

@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.hub.dairy.R;
 import com.hub.dairy.models.Animal;
 import com.hub.dairy.models.MilkProduce;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.hub.dairy.helpers.Constants.DATE;
 import static com.hub.dairy.helpers.Constants.DATE_FORMAT;
 import static com.hub.dairy.helpers.Constants.MILK_PRODUCE;
 
@@ -44,6 +46,7 @@ public class MilkDialog extends AppCompatDialogFragment {
     private CollectionReference milkRef;
     private ProgressBar mProgress;
     private int produceCount;
+    private String mMilkProdId;
 
     @NonNull
     @Override
@@ -58,15 +61,15 @@ public class MilkDialog extends AppCompatDialogFragment {
         Button submit = view.findViewById(R.id.btnSubmit);
 
         Bundle bundle = getArguments();
-        if (bundle != null){
+        if (bundle != null) {
             Animal animal = bundle.getParcelable("animal");
-            if (animal != null){
-                animalId = animal.getId();
-                animalName = animal.getName();
+            if (animal != null) {
+                animalId = animal.getAnimalId();
+                animalName = animal.getAnimalName();
             } else {
                 Log.d(TAG, "onCreateDialog: Something went wrong");
             }
-        } else{
+        } else {
             Log.d(TAG, "onCreateDialog: No Animal passed");
         }
 
@@ -77,10 +80,11 @@ public class MilkDialog extends AppCompatDialogFragment {
         FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         date = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(new Date());
+        milkRef = database.collection(MILK_PRODUCE);
+        mMilkProdId = milkRef.document().getId();
 
         if (user != null) {
             userId = user.getUid();
-            milkRef = database.collection(MILK_PRODUCE).document(userId).collection(MILK_PRODUCE);
         } else {
             Log.d(TAG, "onCreate: User not logged in");
         }
@@ -92,8 +96,8 @@ public class MilkDialog extends AppCompatDialogFragment {
     }
 
     private void getMilkProduceEntries() {
-        milkRef.document(animalId).collection(date)
-                .get().addOnSuccessListener(queryDocumentSnapshots -> {
+        Query prodQuery = milkRef.whereEqualTo(DATE, date);
+        prodQuery.get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
                 produceCount = queryDocumentSnapshots.size();
             } else {
@@ -104,7 +108,7 @@ public class MilkDialog extends AppCompatDialogFragment {
 
     private void saveInfo(AlertDialog alertDialog) {
         String quantity = mQuantity.getText().toString().trim();
-        if (!quantity.isEmpty()){
+        if (!quantity.isEmpty()) {
             doSubmitInfo(quantity, alertDialog);
         } else {
             txtQuantity.setError("Please input quantity of milk produced first");
@@ -113,12 +117,10 @@ public class MilkDialog extends AppCompatDialogFragment {
 
     private void doSubmitInfo(String quantity, AlertDialog alertDialog) {
         mProgress.setVisibility(View.VISIBLE);
-        String milkProdId = milkRef.document().getId();
-        MilkProduce milkProduce = new MilkProduce(userId, animalId, animalName, quantity, date);
-        if (produceCount < 2){
-            milkRef.document(animalId)
-                    .collection(date)
-                    .document(milkProdId).set(milkProduce).addOnCompleteListener(task -> {
+        MilkProduce milkProd =
+                new MilkProduce(mMilkProdId, userId, animalId, animalName, quantity, date);
+        if (produceCount < 2) {
+            milkRef.document(mMilkProdId).set(milkProd).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     mProgress.setVisibility(View.GONE);
                     mQuantity.setText("");
@@ -147,12 +149,12 @@ public class MilkDialog extends AppCompatDialogFragment {
         super.onAttach(context);
         try {
             listener = (MilkInterface) context;
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement MilkDialog");
         }
     }
 
-    public interface MilkInterface{
+    public interface MilkInterface {
         void notifyInput();
     }
 }

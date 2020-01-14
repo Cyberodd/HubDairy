@@ -54,8 +54,8 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         Intent intent = getIntent();
         mAnimal = intent.getParcelableExtra("animal");
         if (mAnimal != null) {
-            animalName = mAnimal.getName();
-            animalId = mAnimal.getId();
+            animalName = mAnimal.getAnimalName();
+            animalId = mAnimal.getAnimalId();
         } else {
             Log.d(TAG, "onCreate: No animal passed");
         }
@@ -76,7 +76,7 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         gender.setText(mAnimal.getGender());
         location.setText(mAnimal.getLocation());
         regDate.setText(mAnimal.getRegDate());
-        breed.setText(mAnimal.getBreed());
+        breed.setText(mAnimal.getAnimalBreed());
         category.setText(mAnimal.getCategory());
         status.setText(mAnimal.getStatus());
 

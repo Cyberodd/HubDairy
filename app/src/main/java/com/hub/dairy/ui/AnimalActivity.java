@@ -28,7 +28,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -73,7 +72,8 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
     private Spinner mSpinner, mStatus;
     private List<Category> mCategories = new ArrayList<>();
     private TextInputLayout inputName, inputBreed, inputLocation;
-    private DocumentReference docRef;
+    private String mUserId;
+    private CollectionReference mCategoryRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,12 +84,11 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
         FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         mStorageReference = FirebaseStorage.getInstance().getReference(UPLOADS);
-        CollectionReference categoryRef = database.collection(CATEGORIES);
+        mCategoryRef = database.collection(CATEGORIES);
 
         if (user != null) {
-            String userId = user.getUid();
-            colRef = database.collection(ANIMALS).document(userId).collection(ANIMALS);
-            docRef = categoryRef.document(userId);
+            mUserId = user.getUid();
+            colRef = database.collection(ANIMALS);
             animalId = colRef.document().getId();
         } else {
             Log.d(TAG, "onCreate: User not logged in");
@@ -137,7 +136,7 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
     }
 
     public void updateCategories() {
-        docRef.collection(CATEGORIES).get().addOnSuccessListener(queryDocumentSnapshots -> {
+        mCategoryRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
                 mCategories.clear();
                 mCategories.addAll(queryDocumentSnapshots.toObjects(Category.class));
@@ -209,7 +208,7 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
     private void saveInfo(String category, String name, String breed, String location,
                           String status, String gender, String regDate) {
         Animal animal = new Animal(animalId, name, breed, location, gender, regDate,
-                mDownloadUrl, category, status);
+                mDownloadUrl, category, status, mUserId);
         colRef.document(animalId).set(animal)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

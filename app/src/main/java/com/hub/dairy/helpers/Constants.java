@@ -9,4 +9,9 @@ public class Constants {
     public static final String UPLOADS = "uploads";
     public static final String MILK_PRODUCE = "milkProduce";
     public static final String MEAT_PRODUCE = "meatProduce";
+    public static final String USER_ID = "userId";
+    public static final String DATE = "date";
+    public static final String REG_DATE = "regDate";
+    public static final String GENDER = "gender";
+    public static final String FEMALE = "Female";
 }

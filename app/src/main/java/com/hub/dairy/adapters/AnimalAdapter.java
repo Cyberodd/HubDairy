@@ -61,8 +61,8 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalHold
         }
 
         private void bind(Animal animal) {
-            animalName.setText(animal.getName());
-            animalBreed.setText(animal.getBreed());
+            animalName.setText(animal.getAnimalName());
+            animalBreed.setText(animal.getAnimalBreed());
 
             Glide.with(itemView.getContext())
                     .load(animal.getImageUrl())

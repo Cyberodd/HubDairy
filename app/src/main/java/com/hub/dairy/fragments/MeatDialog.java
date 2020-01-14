@@ -57,15 +57,15 @@ public class MeatDialog extends AppCompatDialogFragment {
         Button submit = view.findViewById(R.id.buttonSubmit);
 
         Bundle bundle = getArguments();
-        if (bundle != null){
+        if (bundle != null) {
             Animal animal = bundle.getParcelable("animal");
-            if (animal != null){
-                animalId = animal.getId();
-                animalName = animal.getName();
+            if (animal != null) {
+                animalId = animal.getAnimalId();
+                animalName = animal.getAnimalName();
             } else {
                 Log.d(TAG, "onCreateDialog: Something went wrong");
             }
-        } else{
+        } else {
             Log.d(TAG, "onCreateDialog: No Animal passed");
         }
 
@@ -76,10 +76,10 @@ public class MeatDialog extends AppCompatDialogFragment {
         FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         date = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(new Date());
+        meatRef = database.collection(MEAT_PRODUCE);
 
         if (user != null) {
             userId = user.getUid();
-            meatRef = database.collection(MEAT_PRODUCE).document(userId).collection(MEAT_PRODUCE);
         } else {
             Log.d(TAG, "onCreate: User not logged in");
         }
@@ -90,7 +90,7 @@ public class MeatDialog extends AppCompatDialogFragment {
 
     private void saveInfo(AlertDialog alertDialog) {
         String quantity = mQuantity.getText().toString().trim();
-        if (!quantity.isEmpty()){
+        if (!quantity.isEmpty()) {
             doSubmitInfo(quantity, alertDialog);
         } else {
             txtQuantity.setError("Please input quantity of meat produced first");
@@ -99,11 +99,10 @@ public class MeatDialog extends AppCompatDialogFragment {
 
     private void doSubmitInfo(String quantity, AlertDialog alertDialog) {
         mProgress.setVisibility(View.VISIBLE);
-        String milkProdId = meatRef.document().getId();
-        MeatProduce milkProduce = new MeatProduce(userId, animalId, animalName, quantity, date);
-        meatRef.document(animalId)
-                .collection(date)
-                .document(milkProdId).set(milkProduce).addOnCompleteListener(task -> {
+        String meatProdId = meatRef.document().getId();
+        MeatProduce milkProduce =
+                new MeatProduce(meatProdId, userId, animalId, animalName, quantity, date);
+        meatRef.document(meatProdId).set(milkProduce).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 mProgress.setVisibility(View.GONE);
                 mQuantity.setText("");
@@ -127,12 +126,12 @@ public class MeatDialog extends AppCompatDialogFragment {
         super.onAttach(context);
         try {
             listener = (MeatInterface) context;
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement MilkDialog");
         }
     }
 
-    public interface MeatInterface{
+    public interface MeatInterface {
         void isSuccess();
     }
 }

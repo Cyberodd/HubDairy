@@ -72,12 +72,12 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/animalImage"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
                     android:layout_gravity="center"
-                    android:layout_margin="16dp"
+                    android:layout_margin="8dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_launcher_background"
+                    android:src="@drawable/ic_image"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -118,6 +118,7 @@
                 android:layout_height="wrap_content"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:padding="8dp"
+                android:theme="@style/AppTheme.WhiteAccent"
                 android:visibility="gone"/>
 
             <include layout="@layout/animal_form_view" />
@@ -127,10 +128,11 @@
             <Button
                 android:id="@+id/btnSaveInfo"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="35dp"
                 android:text="@string/save_info"
                 android:background="@drawable/buttons"
                 android:textColor="@android:color/white"
+                android:textAllCaps="true"
                 android:layout_margin="20dp"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

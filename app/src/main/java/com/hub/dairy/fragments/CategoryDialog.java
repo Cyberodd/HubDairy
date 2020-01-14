@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hub.dairy.R;
 import com.hub.dairy.models.Category;
@@ -34,7 +33,8 @@ public class CategoryDialog extends AppCompatDialogFragment {
     private EditText mCategoryName;
     private String categoryId;
     private CategoryInterface listener;
-    private DocumentReference docRef;
+    private String mUserId;
+    private CollectionReference mColRef;
 
     @NonNull
     @Override
@@ -47,11 +47,10 @@ public class CategoryDialog extends AppCompatDialogFragment {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        CollectionReference colRef = database.collection(CATEGORIES);
-        categoryId = colRef.document().getId();
+        mColRef = database.collection(CATEGORIES);
+        categoryId = mColRef.document().getId();
         if (user != null){
-            String userId = user.getUid();
-            docRef = colRef.document(userId);
+            mUserId = user.getUid();
         } else {
             Log.d(TAG, "onCreateDialog: User not logged in");
         }
@@ -74,8 +73,8 @@ public class CategoryDialog extends AppCompatDialogFragment {
     private void saveCategory(AlertDialog alertDialog) {
         String categoryName = mCategoryName.getText().toString().trim();
         if (!categoryName.isEmpty()) {
-            Category category = new Category(categoryId, categoryName);
-            docRef.collection(CATEGORIES).document(categoryId).set(category)
+            Category category = new Category(categoryId, categoryName, mUserId);
+            mColRef.document(categoryId).set(category)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             listener.notifyUpdate();

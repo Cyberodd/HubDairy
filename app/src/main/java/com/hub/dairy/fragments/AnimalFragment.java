@@ -19,19 +19,22 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.hub.dairy.ui.DetailActivity;
 import com.hub.dairy.R;
 import com.hub.dairy.adapters.AnimalAdapter;
 import com.hub.dairy.models.Animal;
+import com.hub.dairy.ui.DetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.hub.dairy.helpers.Constants.ANIMALS;
+import static com.hub.dairy.helpers.Constants.REG_DATE;
+import static com.hub.dairy.helpers.Constants.USER_ID;
 
 public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClick {
 
     private static final String TAG = "AnimalFragment";
+    private String userId;
     private RecyclerView animalRv;
     private List<Animal> mAnimals = new ArrayList<>();
     private CollectionReference animalRef;
@@ -53,8 +56,9 @@ public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClic
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
-        if (user != null){
-            animalRef = database.collection(ANIMALS).document(user.getUid()).collection(ANIMALS);
+        animalRef = database.collection(ANIMALS);
+        if (user != null) {
+            userId = user.getUid();
         } else {
             Log.d(TAG, "onActivityCreated: User not logged in");
         }
@@ -70,7 +74,9 @@ public class AnimalFragment extends Fragment implements AnimalAdapter.AnimalClic
         animalRv.setHasFixedSize(true);
         animalRv.setLayoutManager(manager);
 
-        animalRef.orderBy("name", Query.Direction.DESCENDING)
+        Query animalQuery = animalRef.whereEqualTo(USER_ID, userId);
+        animalQuery
+                .orderBy(REG_DATE, Query.Direction.DESCENDING)
                 .get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
                 mAnimals.clear();

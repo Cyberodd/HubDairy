@@ -76,7 +76,7 @@ public class TransactionActivity extends AppCompatActivity {
     private void populateSearch(List<Animal> animals) {
         List<String> names = new ArrayList<>();
         for (Animal animal : animals){
-            String name = animal.getName();
+            String name = animal.getAnimalName();
             names.add(name);
         }
 

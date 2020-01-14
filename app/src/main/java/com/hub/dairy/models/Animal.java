@@ -5,47 +5,50 @@ import android.os.Parcelable;
 
 public class Animal implements Parcelable {
 
-    private String id, name, breed, location, gender, regDate, imageUrl, category, status;
+    private String animalId, animalName, animalBreed, location, gender,
+            regDate, imageUrl, category, status, userId;
 
-    public Animal() {
-    }
+    public Animal() {}
 
-    public Animal(String id, String name, String breed, String location, String gender,
-                  String regDate, String imageUrl, String category, String status) {
-        this.id = id;
-        this.name = name;
-        this.breed = breed;
+    public Animal(String animalId, String animalName, String animalBreed, String location,
+                   String gender, String regDate, String imageUrl, String category, String status, String userId) {
+        this.animalId = animalId;
+        this.animalName = animalName;
+        this.animalBreed = animalBreed;
         this.location = location;
         this.gender = gender;
         this.regDate = regDate;
         this.imageUrl = imageUrl;
         this.category = category;
         this.status = status;
+        this.userId = userId;
     }
 
     protected Animal(Parcel in) {
-        id = in.readString();
-        name = in.readString();
-        breed = in.readString();
+        animalId = in.readString();
+        animalName = in.readString();
+        animalBreed = in.readString();
         location = in.readString();
         gender = in.readString();
         regDate = in.readString();
         imageUrl = in.readString();
         category = in.readString();
         status = in.readString();
+        userId = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(name);
-        dest.writeString(breed);
+        dest.writeString(animalId);
+        dest.writeString(animalName);
+        dest.writeString(animalBreed);
         dest.writeString(location);
         dest.writeString(gender);
         dest.writeString(regDate);
         dest.writeString(imageUrl);
         dest.writeString(category);
         dest.writeString(status);
+        dest.writeString(userId);
     }
 
     @Override
@@ -65,16 +68,16 @@ public class Animal implements Parcelable {
         }
     };
 
-    public String getId() {
-        return id;
+    public String getAnimalId() {
+        return animalId;
     }
 
-    public String getName() {
-        return name;
+    public String getAnimalName() {
+        return animalName;
     }
 
-    public String getBreed() {
-        return breed;
+    public String getAnimalBreed() {
+        return animalBreed;
     }
 
     public String getLocation() {
@@ -93,7 +96,15 @@ public class Animal implements Parcelable {
         return imageUrl;
     }
 
-    public String getCategory(){return category;}
+    public String getCategory() {
+        return category;
+    }
 
-    public String getStatus(){return status;}
+    public String getStatus() {
+        return status;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
 }
