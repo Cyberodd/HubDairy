@@ -68,9 +68,16 @@
     <string name="tap_here">Tap Here</string>
     <string name="trans_info">Select a Transaction type from the dropdown list below</string>
     <string name="search_date">Search Date</string>
-    <string name="enter_cash">Enter Cash</string>
+    <string name="enter_cash">Amount (Ksh)</string>
     <string name="enter_date">Enter Date</string>
     <string name="enter_quantity">Quantity (litres)</string>
+    <string name="transaction_type">Transaction Type</string>
+    <string name="_type">type</string>
+    <string name="_quantity_">Quantity Sold</string>
+    <string name="transaction_date">Transaction Date</string>
+    <string name="amount_">Amount (Ksh)</string>
+    <string name="quantity_litres">Quantity Sold (litres)</string>
+    <string name="quantity_kgs">Quantity Sold (Kgs)</string>
 
     <string-array name="status">
         <item>Choose One</item>

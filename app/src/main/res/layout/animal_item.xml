@@ -60,5 +60,4 @@
                 android:src="@drawable/ic_animals"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
 </LinearLayout>

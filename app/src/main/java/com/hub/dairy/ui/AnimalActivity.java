@@ -208,7 +208,7 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
     private void saveInfo(String category, String name, String breed, String location,
                           String status, String gender, String regDate) {
         Animal animal = new Animal(animalId, name, breed, location, gender, regDate,
-                mDownloadUrl, category, status, mUserId);
+                mDownloadUrl, category, status, "available", mUserId);
         colRef.document(animalId).set(animal)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

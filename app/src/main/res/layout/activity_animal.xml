@@ -65,7 +65,20 @@
                 </RelativeLayout>
 
             </LinearLayout>
-            
+
+            <ProgressBar
+                android:id="@+id/uploadProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:padding="8dp"
+                android:theme="@style/AppTheme.WhiteAccent"
+                android:visibility="gone"/>
+
+            <include layout="@layout/animal_form_view" />
+
+            <include layout="@layout/gender_radio_view" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -111,19 +124,6 @@
                         android:textSize="12sp" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <ProgressBar
-                android:id="@+id/uploadProgress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:padding="8dp"
-                android:theme="@style/AppTheme.WhiteAccent"
-                android:visibility="gone"/>
-
-            <include layout="@layout/animal_form_view" />
-
-            <include layout="@layout/gender_radio_view" />
 
             <Button
                 android:id="@+id/btnSaveInfo"

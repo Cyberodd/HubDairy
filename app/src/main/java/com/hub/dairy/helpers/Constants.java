@@ -15,5 +15,7 @@ public class Constants {
     public static final String GENDER = "gender";
     public static final String FEMALE = "Female";
     public static final String ANIMAL_NAME = "animalName";
+    public static final String ANIMAL_ID = "animalId";
     public static final String TRANSACTIONS = "transactions";
+    public static final String TIME = "time";
 }
