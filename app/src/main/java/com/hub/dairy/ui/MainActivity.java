@@ -72,12 +72,14 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     private void toTransaction() {
         TransactionDialog dialog = new TransactionDialog();
         dialog.show(getSupportFragmentManager(), "TransactionDialog");
+        closeFab();
     }
 
     private void navigateToAddAnimal() {
         Intent intent = new Intent(this, AnimalActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        closeFab();
     }
 
     private void displayAnimations() {
@@ -175,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     }
 
     @Override
-    public void notifyInput() {
-
+    public void notifyInput(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

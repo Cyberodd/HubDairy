@@ -70,6 +70,7 @@
     <string name="search_date">Search Date</string>
     <string name="enter_cash">Enter Cash</string>
     <string name="enter_date">Enter Date</string>
+    <string name="enter_quantity">Quantity (litres)</string>
 
     <string-array name="status">
         <item>Choose One</item>

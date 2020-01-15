@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -55,6 +55,7 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/search_animal_name"
                         android:completionThreshold="1"
+                        android:singleLine="true"
                         android:layout_gravity="center_horizontal"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_marginStart="4dp"
@@ -75,8 +76,27 @@
                         android:id="@+id/inputDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="date"
-                        android:hint="@string/enter_date"/>
+                        android:hint="@string/enter_date"
+                        android:focusable="false"
+                        android:textColor="?colorAccent"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txtQuantity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="?colorAccent"
+                    app:errorEnabled="true"
+                    android:layout_margin="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputQuantity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/enter_quantity"
+                        android:inputType="numberDecimal"
+                        android:textColor="?colorAccent" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -93,6 +113,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="numberDecimal"
+                        android:textColor="?colorAccent"
                         android:hint="@string/enter_cash"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -152,10 +173,11 @@
                     android:layout_margin="8dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/inputMeatCash"
+                        android:id="@+id/inputAnimalCash"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="numberDecimal"
+                        android:textColor="?colorAccent"
                         android:hint="@string/enter_cash"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -186,4 +208,12 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+    <ProgressBar
+        android:id="@+id/transProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:theme="@style/AppTheme.WhiteAccent"/>
+
+</RelativeLayout>
