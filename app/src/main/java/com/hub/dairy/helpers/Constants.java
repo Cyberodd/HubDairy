@@ -18,4 +18,5 @@ public class Constants {
     public static final String ANIMAL_ID = "animalId";
     public static final String TRANSACTIONS = "transactions";
     public static final String TIME = "time";
+    public static final int SINGLE = 1;
 }

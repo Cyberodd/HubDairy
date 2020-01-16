@@ -1,12 +1,6 @@
 
 package com.hub.dairy.ui;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,17 +11,36 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.hub.dairy.R;
 import com.hub.dairy.adapters.TabPagerAdapter;
 import com.hub.dairy.fragments.AnimalFragment;
 import com.hub.dairy.fragments.ReportsFragment;
 import com.hub.dairy.fragments.TransactionDialog;
 import com.hub.dairy.fragments.TransactionFragment;
+import com.hub.dairy.helpers.TransactionEvent;
+import com.hub.dairy.models.Transaction;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.hub.dairy.helpers.Constants.TIME;
+import static com.hub.dairy.helpers.Constants.TRANSACTIONS;
+import static com.hub.dairy.helpers.Constants.USER_ID;
 
 public class MainActivity extends AppCompatActivity implements TransactionDialog.TransInterface {
 
@@ -40,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     private TextView txtAddAnimal, txtTransaction;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
+    private String userId;
+    private CollectionReference transRef;
+    private List<Transaction> mTransactions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +64,13 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
 
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        transRef = database.collection(TRANSACTIONS);
+        if (mUser != null) {
+            userId = mUser.getUid();
+        } else {
+            Log.d(TAG, "onActivityCreated: User not logged in");
+        }
 
         initViews();
 
@@ -150,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     }
 
     private void logOut() {
-        if (mUser != null){
+        if (mUser != null) {
             mAuth.signOut();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -163,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     @Override
     protected void onStart() {
         super.onStart();
-        if (mUser == null){
+        if (mUser == null) {
             toLoginActivity();
         } else {
             Log.d(TAG, "onStart: User logged in");
@@ -178,6 +201,22 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
 
     @Override
     public void notifyInput(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Query query = transRef.whereEqualTo(USER_ID, userId);
+        query.orderBy(TIME, Query.Direction.DESCENDING)
+                .get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (!queryDocumentSnapshots.isEmpty()) {
+                mTransactions.clear();
+                mTransactions.addAll(queryDocumentSnapshots.toObjects(Transaction.class));
+                emitTransactions(mTransactions);
+            } else {
+                Log.d(TAG, "notifyInput: No transactions");
+            }
+        });
+    }
+
+    private void emitTransactions(List<Transaction> transactions) {
+        TransactionEvent event = new TransactionEvent();
+        event.setTransactions(transactions);
+        EventBus.getDefault().post(event);
     }
 }
