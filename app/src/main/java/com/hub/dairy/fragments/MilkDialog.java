@@ -107,15 +107,17 @@ public class MilkDialog extends AppCompatDialogFragment {
     }
 
     private void saveInfo(AlertDialog alertDialog) {
-        String quantity = mQuantity.getText().toString().trim();
+        String quantity = mQuantity.getText().toString();
         if (!quantity.isEmpty()) {
-            doSubmitInfo(quantity, alertDialog);
+            float qt = Float.parseFloat(quantity);
+            txtQuantity.setError("");
+            doSubmitInfo(qt, alertDialog);
         } else {
             txtQuantity.setError("Please input quantity of milk produced first");
         }
     }
 
-    private void doSubmitInfo(String quantity, AlertDialog alertDialog) {
+    private void doSubmitInfo(float quantity, AlertDialog alertDialog) {
         mProgress.setVisibility(View.VISIBLE);
         MilkProduce milkProd =
                 new MilkProduce(mMilkProdId, userId, animalId, animalName, quantity, date);

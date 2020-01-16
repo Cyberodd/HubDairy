@@ -13,18 +13,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:windowSoftInputMode="stateHidden"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".ui.ProfileActivity"
             android:launchMode="singleTop"/>
         <activity android:name=".ui.RegisterActivity" />
         <activity android:name=".ui.LoginActivity" />
-        <activity android:name=".ui.TransactionActivity"
-            android:launchMode="singleTop"/>
         <activity android:name=".ui.DetailActivity" />
         <activity android:name=".ui.AnimalActivity" />
         <activity
-            android:name=".ui.MainActivity">
+            android:name=".ui.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

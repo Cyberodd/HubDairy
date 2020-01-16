@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -34,7 +35,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.hub.dairy.R;
 import com.hub.dairy.models.Animal;
-import com.hub.dairy.models.MilkSale;
+import com.hub.dairy.models.Transaction;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,11 +48,18 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.hub.dairy.helpers.Constants.ANIMALS;
+import static com.hub.dairy.helpers.Constants.ANIMAL_ID;
 import static com.hub.dairy.helpers.Constants.ANIMAL_NAME;
+import static com.hub.dairy.helpers.Constants.AVAILABLE;
+import static com.hub.dairy.helpers.Constants.REG_DATE;
+import static com.hub.dairy.helpers.Constants.STATUS;
 import static com.hub.dairy.helpers.Constants.DATE_FORMAT;
 import static com.hub.dairy.helpers.Constants.FEMALE;
 import static com.hub.dairy.helpers.Constants.GENDER;
+import static com.hub.dairy.helpers.Constants.TIME;
 import static com.hub.dairy.helpers.Constants.TRANSACTIONS;
+import static com.hub.dairy.helpers.Constants.TYPE;
+import static com.hub.dairy.helpers.Constants.USER_ID;
 
 public class TransactionDialog extends AppCompatDialogFragment implements
         DatePickerDialog.OnDateSetListener {
@@ -69,7 +77,9 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     private LinearLayout milkPurchase;
     private Animal mAnimal;
     private List<Animal> mAnimals;
+    private List<Animal> allAnimals;
     private List<String> names;
+    private List<String> allAnimalNames;
 
     @NonNull
     @Override
@@ -124,6 +134,10 @@ public class TransactionDialog extends AppCompatDialogFragment implements
 
         animalSale.setOnClickListener(v -> saleAnimal());
 
+        Objects.requireNonNull(alertDialog.getWindow()).setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
+                        WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         return alertDialog;
     }
 
@@ -131,10 +145,10 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         String transId = transRef.document().getId();
         String date = inputDate.getText().toString();
         String cash = inputCash.getText().toString().trim();
-        validateAnimalName();
+        validateAllAnimalNames();
         if (!mAnimalName.getText().toString().isEmpty()) {
             textAnimal.setError("");
-            if (names.contains(mAnimalName.getText().toString().trim())) {
+            if (allAnimalNames.contains(mAnimalName.getText().toString().trim())) {
                 textAnimal.setError("");
                 if (!date.isEmpty()) {
                     textDate.setError("");
@@ -155,11 +169,20 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         }
     }
 
+    private void validateAllAnimalNames() {
+        allAnimalNames = new ArrayList<>();
+        for (Animal animal : allAnimals) {
+            String name = animal.getAnimalName();
+            allAnimalNames.add(name);
+        }
+    }
+
     private void doSaleAnimal(String transId, String date, String cash) {
-        String quantity = "1";
+        float quantity = 1;
         mProgress.setVisibility(View.VISIBLE);
-        MilkSale milkSale = new MilkSale(transId, animalId, quantity, cash, mType, date, userId, time);
-        transRef.document(transId).set(milkSale).addOnCompleteListener(task -> {
+        Transaction transaction =
+                new Transaction(transId, animalId, quantity, cash, mType, date, userId, time, "");
+        transRef.document(transId).set(transaction).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 setAvailability(animalId);
             } else {
@@ -180,9 +203,9 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         });
     }
 
-    private void validateAnimalName(){
+    private void validateAnimalName() {
         names = new ArrayList<>();
-        for (Animal animal : mAnimals){
+        for (Animal animal : mAnimals) {
             String name = animal.getAnimalName();
             names.add(name);
         }
@@ -201,10 +224,11 @@ public class TransactionDialog extends AppCompatDialogFragment implements
                 if (!date.isEmpty()) {
                     textDate.setError("");
                     if (!quantity.isEmpty()) {
+                        float qt = Float.parseFloat(quantity);
                         txtQuantity.setError("");
                         if (!cash.isEmpty()) {
                             textCash.setError("");
-                            doSubmit(transId, date, quantity, cash);
+                            fetchPrevTransactions(transId, date, qt, cash);
                         } else {
                             textCash.setError("Please enter amount");
                         }
@@ -222,10 +246,41 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         }
     }
 
-    private void doSubmit(String transId, String date, String quantity, String cash) {
+    private void fetchPrevTransactions(String transId, String date, float quantity, String cash) {
+        Query query = transRef.whereEqualTo(ANIMAL_ID, animalId)
+                .whereEqualTo(TYPE, mType)
+                .whereEqualTo(USER_ID, userId)
+                .orderBy(TIME, Query.Direction.DESCENDING);
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            List<Transaction> transactions = new ArrayList<>();
+            if (!queryDocumentSnapshots.isEmpty()) {
+                transactions = queryDocumentSnapshots.toObjects(Transaction.class);
+                getPrevTransId(transactions, transId, date, quantity, cash);
+            } else {
+                getPrevTransId(transactions, transId, date, quantity, cash);
+                Log.d(TAG, "fetchPrevTransactions: No transactions yet");
+            }
+        });
+    }
+
+    private void getPrevTransId(List<Transaction> transactions, String transId, String date,
+                                float quantity, String cash) {
+        String prevTransId;
+        if (!transactions.isEmpty()) {
+            prevTransId = transactions.get(0).getTransId();
+            Log.d(TAG, "getPrevTransId: transId " + prevTransId);
+            doSubmit(transId, date, quantity, cash, prevTransId);
+        } else {
+            prevTransId = "";
+            doSubmit(transId, date, quantity, cash, prevTransId);
+        }
+    }
+
+    private void doSubmit(String transId, String date, float quantity, String cash, String prevTransId) {
         mProgress.setVisibility(View.VISIBLE);
-        MilkSale milkSale = new MilkSale(transId, animalId, quantity, cash, mType, date, userId, time);
-        transRef.document(transId).set(milkSale).addOnCompleteListener(task -> {
+        Transaction transaction = new Transaction(
+                transId, animalId, quantity, cash, mType, date, userId, time, prevTransId);
+        transRef.document(transId).set(transaction).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 mProgress.setVisibility(View.GONE);
                 dismiss();
@@ -305,10 +360,10 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     }
 
     private void showMilkFields() {
-        txtQuantity.setVisibility(View.VISIBLE);
         transSpinner.setVisibility(View.VISIBLE);
         textAnimal.setVisibility(View.VISIBLE);
         textDate.setVisibility(View.VISIBLE);
+        txtQuantity.setVisibility(View.VISIBLE);
         textCash.setVisibility(View.VISIBLE);
         milkSale.setVisibility(View.VISIBLE);
         animalSale.setVisibility(View.GONE);
@@ -320,6 +375,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         textDate.setVisibility(View.GONE);
         textCash.setVisibility(View.GONE);
         milkSale.setVisibility(View.GONE);
+        animalSale.setVisibility(View.GONE);
     }
 
     private void hideMilkFields() {
@@ -334,7 +390,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
 
     private void loadFemaleAnimals() {
         mAnimals = new ArrayList<>();
-        Query query = animalRef.whereEqualTo(GENDER, FEMALE);
+        Query query = animalRef.whereEqualTo(GENDER, FEMALE).whereEqualTo(USER_ID, userId);
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
                 mAnimals.clear();
@@ -360,21 +416,24 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     }
 
     private void loadAllAnimals() {
-        mAnimals = new ArrayList<>();
-        animalRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+        allAnimals = new ArrayList<>();
+        Query query = animalRef.whereEqualTo(USER_ID, userId)
+                .whereEqualTo(STATUS, AVAILABLE)
+                .orderBy(REG_DATE, Query.Direction.DESCENDING);
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
-                mAnimals.clear();
-                mAnimals.addAll(queryDocumentSnapshots.toObjects(Animal.class));
-                allAnimalSearch(mAnimals);
+                allAnimals.clear();
+                allAnimals.addAll(queryDocumentSnapshots.toObjects(Animal.class));
+                allAnimalSearch(allAnimals);
             } else {
                 Log.d(TAG, "getUserAnimals: No user animals currently");
             }
         });
     }
 
-    private void allAnimalSearch(List<Animal> animals) {
+    private void allAnimalSearch(List<Animal> allAnimals) {
         List<String> names = new ArrayList<>();
-        for (Animal animal : animals) {
+        for (Animal animal : allAnimals) {
             String name = animal.getAnimalName();
             names.add(name);
         }
@@ -384,7 +443,6 @@ public class TransactionDialog extends AppCompatDialogFragment implements
                         android.R.layout.simple_spinner_dropdown_item, names);
         mAnimalName.setAdapter(adapter);
     }
-
 
     @Override
     public void onAttach(@NonNull Context context) {

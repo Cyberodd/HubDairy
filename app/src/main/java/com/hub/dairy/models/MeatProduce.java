@@ -2,13 +2,14 @@ package com.hub.dairy.models;
 
 public class MeatProduce {
 
-    private String produceId, userId, animalId, animalName, quantity, date;
+    private String produceId, userId, animalId, animalName, date;
+    private float quantity;
 
     public MeatProduce() {
     }
 
     public MeatProduce(String produceId, String userId, String animalId, String animalName,
-                       String quantity, String date) {
+                       float quantity, String date) {
         this.produceId = produceId;
         this.userId = userId;
         this.animalId = animalId;
@@ -33,7 +34,7 @@ public class MeatProduce {
         return animalName;
     }
 
-    public String getQuantity() {
+    public float getQuantity() {
         return quantity;
     }
 

@@ -78,6 +78,9 @@
     <string name="amount_">Amount (Ksh)</string>
     <string name="quantity_litres">Quantity Sold (litres)</string>
     <string name="quantity_kgs">Quantity Sold (Kgs)</string>
+    <string name="availability_">Availability</string>
+    <string name="available">Available</string>
+    <string name="sold">Sold</string>
 
     <string-array name="status">
         <item>Choose One</item>

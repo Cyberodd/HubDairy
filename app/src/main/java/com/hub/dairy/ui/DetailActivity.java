@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,11 +37,12 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
     private Toolbar mToolbar;
     private Animal mAnimal;
     private String animalName, animalId;
-    private TextView name, gender, location, regDate, breed, category, status;
+    private TextView name, gender, location, regDate, breed, category, status, availability;
     private CircleImageView image;
     private Button mShowDialog;
     private FirebaseFirestore mDatabase;
     private FirebaseUser mUser;
+    private RelativeLayout addProduce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,13 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         breed.setText(mAnimal.getAnimalBreed());
         category.setText(mAnimal.getCategory());
         status.setText(mAnimal.getStatus());
+        availability.setText(mAnimal.getAvailability());
+
+        if (mAnimal.getAvailability().equals("sold")){
+            addProduce.setVisibility(View.GONE);
+        } else {
+            addProduce.setVisibility(View.VISIBLE);
+        }
 
         Glide.with(this).load(mAnimal.getImageUrl())
                 .placeholder(R.drawable.ic_loading)
@@ -97,6 +106,8 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         category = findViewById(R.id.animal_category);
         status = findViewById(R.id.animal_status);
         mShowDialog = findViewById(R.id.btnShowDialog);
+        availability = findViewById(R.id.availability);
+        addProduce = findViewById(R.id.addProduce);
     }
 
     @Override

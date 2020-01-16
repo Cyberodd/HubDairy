@@ -6,14 +6,14 @@ import android.os.Parcelable;
 public class Animal implements Parcelable {
 
     private String animalId, animalName, animalBreed, location, gender,
-            regDate, imageUrl, category, status, availablity, userId;
+            regDate, imageUrl, category, status, availability, userId;
 
     public Animal() {
     }
 
     public Animal(String animalId, String animalName, String animalBreed, String location,
-                  String gender, String regDate, String imageUrl, String category, String status,
-                  String availability, String userId) {
+                   String gender, String regDate, String imageUrl, String category, String status,
+                   String availability, String userId) {
         this.animalId = animalId;
         this.animalName = animalName;
         this.animalBreed = animalBreed;
@@ -23,7 +23,7 @@ public class Animal implements Parcelable {
         this.imageUrl = imageUrl;
         this.category = category;
         this.status = status;
-        this.availablity = availability;
+        this.availability = availability;
         this.userId = userId;
     }
 
@@ -37,7 +37,7 @@ public class Animal implements Parcelable {
         imageUrl = in.readString();
         category = in.readString();
         status = in.readString();
-        availablity = in.readString();
+        availability = in.readString();
         userId = in.readString();
     }
 
@@ -52,7 +52,7 @@ public class Animal implements Parcelable {
         dest.writeString(imageUrl);
         dest.writeString(category);
         dest.writeString(status);
-        dest.writeString(availablity);
+        dest.writeString(availability);
         dest.writeString(userId);
     }
 
@@ -109,8 +109,8 @@ public class Animal implements Parcelable {
         return status;
     }
 
-    public String getAvailablity() {
-        return availablity;
+    public String getAvailability() {
+        return availability;
     }
 
     public String getUserId() {

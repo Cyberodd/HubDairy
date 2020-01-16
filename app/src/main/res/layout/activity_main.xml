@@ -26,14 +26,15 @@
                 android:id="@+id/mainTabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:tabIndicator="@android:color/white"
-                app:tabSelectedTextColor="@android:color/white"
+                app:tabSelectedTextColor="@color/colorPrimary"
                 app:tabTextColor="@color/lightGrey"
                 app:tabIndicatorHeight="2dp"
+                app:elevation="2dp"
+                android:background="@android:color/white"
                 app:tabTextAppearance="@style/MyMenuTextAppearance1"
                 app:tabGravity="fill"
                 android:tag="sticky"
-                app:tabIndicatorColor="@android:color/white"
+                app:tabIndicatorColor="@color/colorRed"
                 app:tabMode="fixed"/>
         </com.google.android.material.appbar.AppBarLayout>
 

@@ -48,6 +48,7 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.hub.dairy.helpers.Constants.ANIMALS;
+import static com.hub.dairy.helpers.Constants.AVAILABLE;
 import static com.hub.dairy.helpers.Constants.CATEGORIES;
 import static com.hub.dairy.helpers.Constants.DATE_FORMAT;
 import static com.hub.dairy.helpers.Constants.IMAGE_URL;
@@ -207,8 +208,18 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
 
     private void saveInfo(String category, String name, String breed, String location,
                           String status, String gender, String regDate) {
+        if (mDownloadUrl != null) {
+            doSaveInfo(mDownloadUrl, category, name, breed, location, status, gender, regDate);
+        } else {
+            mDownloadUrl = IMAGE_URL;
+            doSaveInfo(mDownloadUrl, category, name, breed, location, status, gender, regDate);
+        }
+    }
+
+    private void doSaveInfo(String downloadUrl, String category, String name, String breed,
+                            String location, String status, String gender, String regDate) {
         Animal animal = new Animal(animalId, name, breed, location, gender, regDate,
-                mDownloadUrl, category, status, "available", mUserId);
+                downloadUrl, category, status, AVAILABLE, mUserId);
         colRef.document(animalId).set(animal)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -275,8 +286,12 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
             }).addOnFailureListener(e -> Toast.makeText(this, e.getMessage(),
                     Toast.LENGTH_SHORT).show())
                     .addOnSuccessListener(taskSnapshot -> {
+                        mSaveInfo.setEnabled(false);
                         fileRef.getDownloadUrl()
-                                .addOnSuccessListener(uri -> mDownloadUrl = uri.toString())
+                                .addOnSuccessListener(uri -> {
+                                    mSaveInfo.setEnabled(true);
+                                    mDownloadUrl = uri.toString();
+                                })
                                 .addOnFailureListener(e -> Toast.makeText(this,
                                         e.getMessage(), Toast.LENGTH_SHORT).show());
                         mProgress.setVisibility(View.GONE);
@@ -284,7 +299,6 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
                     });
         } else {
             mProgress.setVisibility(View.GONE);
-            mDownloadUrl = IMAGE_URL;
         }
     }
 

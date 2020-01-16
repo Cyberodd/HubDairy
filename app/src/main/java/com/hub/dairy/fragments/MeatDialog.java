@@ -91,13 +91,14 @@ public class MeatDialog extends AppCompatDialogFragment {
     private void saveInfo(AlertDialog alertDialog) {
         String quantity = mQuantity.getText().toString().trim();
         if (!quantity.isEmpty()) {
-            doSubmitInfo(quantity, alertDialog);
+            float qty = Float.parseFloat(quantity);
+            doSubmitInfo(qty, alertDialog);
         } else {
             txtQuantity.setError("Please input quantity of meat produced first");
         }
     }
 
-    private void doSubmitInfo(String quantity, AlertDialog alertDialog) {
+    private void doSubmitInfo(float quantity, AlertDialog alertDialog) {
         mProgress.setVisibility(View.VISIBLE);
         String meatProdId = meatRef.document().getId();
         MeatProduce milkProduce =
