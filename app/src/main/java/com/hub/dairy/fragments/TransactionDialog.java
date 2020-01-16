@@ -69,7 +69,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     private LinearLayout milkPurchase;
     private Animal mAnimal;
     private List<Animal> mAnimals;
-    private List<Animal> allAnimals;
+    private List<String> names;
 
     @NonNull
     @Override
@@ -131,28 +131,24 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         String transId = transRef.document().getId();
         String date = inputDate.getText().toString();
         String cash = inputCash.getText().toString().trim();
+        validateAnimalName();
         if (!mAnimalName.getText().toString().isEmpty()) {
-            for (Animal animal : allAnimals) {
-                List<String> names = new ArrayList<>();
-                for (String name : names){
-                    name = animal.getAnimalName();
-                    names.add(name);
-                    for (String name1 : names){
-                        if (mAnimalName.getText().toString().trim().equals(name1)){
-                            if (!date.isEmpty()) {
-                                if (!cash.isEmpty()) {
-                                    doSaleAnimal(transId, date, cash);
-                                } else {
-                                    textCash.setError("Please enter amount");
-                                }
-                            } else {
-                                textDate.setError("Please select a date");
-                            }
-                        } else {
-                            textAnimal.setError("Invalid animal name");
-                        }
+            textAnimal.setError("");
+            if (names.contains(mAnimalName.getText().toString().trim())) {
+                textAnimal.setError("");
+                if (!date.isEmpty()) {
+                    textDate.setError("");
+                    if (!cash.isEmpty()) {
+                        doSaleAnimal(transId, date, cash);
+                    } else {
+                        textCash.setError("");
+                        textCash.setError("Please enter amount");
                     }
+                } else {
+                    textDate.setError("Please select a date");
                 }
+            } else {
+                textAnimal.setError("Invalid animal name");
             }
         } else {
             textAnimal.setError("Animal name required");
@@ -184,31 +180,42 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         });
     }
 
+    private void validateAnimalName(){
+        names = new ArrayList<>();
+        for (Animal animal : mAnimals){
+            String name = animal.getAnimalName();
+            names.add(name);
+        }
+    }
+
     private void submitSale() {
         String transId = transRef.document().getId();
         String date = inputDate.getText().toString();
         String quantity = inputQuantity.getText().toString().trim();
         String cash = inputCash.getText().toString().trim();
-
+        validateAnimalName();
         if (!mAnimalName.getText().toString().isEmpty()) {
-            for (Animal animal : mAnimals) {
-                if (mAnimalName.getText().toString().trim().equals(animal.getAnimalName())) {
-                    if (!date.isEmpty()) {
-                        if (!quantity.isEmpty()) {
-                            if (!cash.isEmpty()) {
-                                doSubmit(transId, date, quantity, cash);
-                            } else {
-                                textCash.setError("Please enter amount");
-                            }
+            textAnimal.setError("");
+            if (names.contains(mAnimalName.getText().toString().trim())) {
+                textAnimal.setError("");
+                if (!date.isEmpty()) {
+                    textDate.setError("");
+                    if (!quantity.isEmpty()) {
+                        txtQuantity.setError("");
+                        if (!cash.isEmpty()) {
+                            textCash.setError("");
+                            doSubmit(transId, date, quantity, cash);
                         } else {
-                            txtQuantity.setError("Please enter quantity");
+                            textCash.setError("Please enter amount");
                         }
                     } else {
-                        textDate.setError("Please select a date");
+                        txtQuantity.setError("Please enter quantity");
                     }
                 } else {
-                    textAnimal.setError("Invalid animal name");
+                    textDate.setError("Please select a date");
                 }
+            } else {
+                textAnimal.setError("Invalid animal name");
             }
         } else {
             textAnimal.setError("Animal name required");
@@ -353,21 +360,21 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     }
 
     private void loadAllAnimals() {
-        allAnimals = new ArrayList<>();
+        mAnimals = new ArrayList<>();
         animalRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
-                allAnimals.clear();
-                allAnimals.addAll(queryDocumentSnapshots.toObjects(Animal.class));
-                allAnimalSearch(allAnimals);
+                mAnimals.clear();
+                mAnimals.addAll(queryDocumentSnapshots.toObjects(Animal.class));
+                allAnimalSearch(mAnimals);
             } else {
                 Log.d(TAG, "getUserAnimals: No user animals currently");
             }
         });
     }
 
-    private void allAnimalSearch(List<Animal> allAnimals) {
+    private void allAnimalSearch(List<Animal> animals) {
         List<String> names = new ArrayList<>();
-        for (Animal animal : allAnimals) {
+        for (Animal animal : animals) {
             String name = animal.getAnimalName();
             names.add(name);
         }
