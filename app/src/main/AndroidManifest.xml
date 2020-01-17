@@ -21,7 +21,8 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.ProfileActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
         <activity android:name=".ui.RegisterActivity" />
         <activity android:name=".ui.LoginActivity" />
         <activity android:name=".ui.DetailActivity" />

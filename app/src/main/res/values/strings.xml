@@ -100,6 +100,10 @@
     <string name="error">Something went wrong</string>
     <string name="no_reports">No reports for this date</string>
     <string name="info">Daily Report for the selected date</string>
+    <string name="logout">Logout</string>
+    <string name="edit_account_info">Edit Account Info</string>
+    <string name="no_of_animals">No. of Animals</string>
+    <string name="phone">Phone</string>
 
     <string-array name="status">
         <item>Choose One</item>
