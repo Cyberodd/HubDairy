@@ -30,7 +30,6 @@
         android:textAllCaps="true"
         android:background="@drawable/buttons"
         android:text="@string/milk_produce" />
-
     <Button
         android:id="@+id/btnMeat"
         android:layout_width="match_parent"

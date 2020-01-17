@@ -81,6 +81,25 @@
     <string name="availability_">Availability</string>
     <string name="available">Available</string>
     <string name="sold">Sold</string>
+    <string name="update_animal_info">Update Animal Info</string>
+    <string name="reports">Reports</string>
+    <string name="report_date">Search Date to generate report</string>
+    <string name="no_record">Selected date doesn\'t contain any record</string>
+    <string name="report_error">Unable to generate report</string>
+    <string name="congrats">Congratulations</string>
+    <string name="report_id">ReportId</string>
+    <string name="date">Date</string>
+    <string name="total_milk_sales">Total Milk Sales</string>
+    <string name="total">total</string>
+    <string name="total_animal_sales">Total Animal Sales</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="click_here">Click To View</string>
+    <string name="proceed">Proceed</string>
+    <string name="info_msg">Report generated successfully. Click on Proceed to view report, otherwise click on Cancel</string>
+    <string name="total_transactions">Total Transactions</string>
+    <string name="error">Something went wrong</string>
+    <string name="no_reports">No reports for this date</string>
+    <string name="info">Daily Report for the selected date</string>
 
     <string-array name="status">
         <item>Choose One</item>

@@ -154,8 +154,8 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
             case R.id.action_log_out:
                 logOut();
                 return true;
-            case R.id.action_search:
-                Toast.makeText(this, "Coming soon", Toast.LENGTH_SHORT).show();
+            case R.id.action_reports:
+                toReports();
                 return true;
             case R.id.action_profile:
                 toProfile();
@@ -163,6 +163,11 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void toReports() {
+        Intent intent = new Intent(this, ReportsActivity.class);
+        startActivity(intent);
     }
 
     private void toProfile() {

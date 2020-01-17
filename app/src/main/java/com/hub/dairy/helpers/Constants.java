@@ -20,6 +20,9 @@ public class Constants {
     public static final String TRANSACTIONS = "transactions";
     public static final String TIME = "time";
     public static final String TYPE = "type";
+    public static final String MILK_TYPE = "Milk Sale";
+    public static final String ANIMAL_TYPE = "Animal Sale";
     public static final String STATUS = "availability";
     public static final String AVAILABLE = "available";
+    public static final String REPORTS = "reports";
 }

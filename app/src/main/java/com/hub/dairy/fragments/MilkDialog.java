@@ -57,6 +57,7 @@ public class MilkDialog extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams")
         View view = inflater.inflate(R.layout.milk_produce, null);
+
         mQuantity = view.findViewById(R.id.quantity);
         txtQuantity = view.findViewById(R.id.textQuantity);
         mProgress = view.findViewById(R.id.produceProgress);

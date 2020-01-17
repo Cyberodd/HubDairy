@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/congrats"
+        android:textColor="@color/colorPrimary"
+        android:textAlignment="center"
+        android:padding="16dp"
+        android:textAllCaps="true"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/txtReportInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:padding="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:text="@string/option_info"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp">
+        <TextView
+            android:id="@+id/txtCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textColor="@color/colorRed"
+            android:textAllCaps="true"
+            android:padding="8dp"/>
+        <TextView
+            android:id="@+id/txtProceed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/proceed"
+            android:textAllCaps="true"
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/colorPrimary"/>
+    </RelativeLayout>
+
+</LinearLayout>

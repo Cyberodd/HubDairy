@@ -37,7 +37,7 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
     private Toolbar mToolbar;
     private Animal mAnimal;
     private String animalName, animalId;
-    private TextView name, gender, location, regDate, breed, category, status, availability;
+    private TextView name, gender, location, regDate, breed, category, status, availability, update;
     private CircleImageView image;
     private Button mShowDialog;
     private FirebaseFirestore mDatabase;
@@ -70,7 +70,13 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
 
         mShowDialog.setOnClickListener(v -> openDialog());
 
+        update.setOnClickListener(v -> updateInfo());
+
         displayAnimalInfo();
+    }
+
+    private void updateInfo() {
+        Toast.makeText(this, "Opening update dialog", Toast.LENGTH_SHORT).show();
     }
 
     private void displayAnimalInfo() {
@@ -108,6 +114,7 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         mShowDialog = findViewById(R.id.btnShowDialog);
         availability = findViewById(R.id.availability);
         addProduce = findViewById(R.id.addProduce);
+        update = findViewById(R.id.updateAnimalInfo);
     }
 
     @Override
