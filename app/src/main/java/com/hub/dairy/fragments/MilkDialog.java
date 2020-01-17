@@ -32,9 +32,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.hub.dairy.helpers.Constants.ANIMAL_ID;
 import static com.hub.dairy.helpers.Constants.DATE;
-import static com.hub.dairy.helpers.Constants.DATE_FORMAT;
+import static com.hub.dairy.helpers.Constants.LONG_DATE;
 import static com.hub.dairy.helpers.Constants.MILK_PRODUCE;
+import static com.hub.dairy.helpers.Constants.SHORT_DATE;
 
 public class MilkDialog extends AppCompatDialogFragment {
 
@@ -42,7 +44,7 @@ public class MilkDialog extends AppCompatDialogFragment {
     private MilkInterface listener;
     private TextInputLayout txtQuantity;
     private EditText mQuantity;
-    private String date, userId, animalId, animalName;
+    private String date, time, userId, animalId, animalName;
     private CollectionReference milkRef;
     private ProgressBar mProgress;
     private int produceCount;
@@ -79,7 +81,9 @@ public class MilkDialog extends AppCompatDialogFragment {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        date = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(new Date());
+        date = new SimpleDateFormat(SHORT_DATE, Locale.getDefault()).format(new Date());
+        time = new SimpleDateFormat(LONG_DATE, Locale.getDefault()).format(new Date());
+
         milkRef = database.collection(MILK_PRODUCE);
         mMilkProdId = milkRef.document().getId();
 
@@ -96,7 +100,8 @@ public class MilkDialog extends AppCompatDialogFragment {
     }
 
     private void getMilkProduceEntries() {
-        Query prodQuery = milkRef.whereEqualTo(DATE, date);
+        Query prodQuery = milkRef.whereEqualTo(DATE, date)
+                .whereEqualTo(ANIMAL_ID, animalId);
         prodQuery.get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (!queryDocumentSnapshots.isEmpty()) {
                 produceCount = queryDocumentSnapshots.size();
@@ -109,18 +114,17 @@ public class MilkDialog extends AppCompatDialogFragment {
     private void saveInfo(AlertDialog alertDialog) {
         String quantity = mQuantity.getText().toString();
         if (!quantity.isEmpty()) {
-            float qt = Float.parseFloat(quantity);
             txtQuantity.setError("");
-            doSubmitInfo(qt, alertDialog);
+            doSubmitInfo(quantity, alertDialog);
         } else {
             txtQuantity.setError("Please input quantity of milk produced first");
         }
     }
 
-    private void doSubmitInfo(float quantity, AlertDialog alertDialog) {
+    private void doSubmitInfo(String quantity, AlertDialog alertDialog) {
         mProgress.setVisibility(View.VISIBLE);
         MilkProduce milkProd =
-                new MilkProduce(mMilkProdId, userId, animalId, animalName, quantity, date);
+                new MilkProduce(mMilkProdId, userId, animalId, animalName, quantity, date, time);
         if (produceCount < 2) {
             milkRef.document(mMilkProdId).set(milkProd).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -145,6 +149,7 @@ public class MilkDialog extends AppCompatDialogFragment {
             txtQuantity.setError("Can't enter more than 2 entries on the same day");
         }
     }
+
 
     @Override
     public void onAttach(@NonNull Context context) {

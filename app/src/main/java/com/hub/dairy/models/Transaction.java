@@ -2,13 +2,12 @@ package com.hub.dairy.models;
 
 public class Transaction {
 
-    private String transId, animalId, cash, type, date, userId, time, prevTransId;
-    private float quantity;
+    private String transId, animalId, quantity, cash, type, date, userId, time, prevTransId;
 
     public Transaction() {
     }
 
-    public Transaction(String transId, String animalId, float quantity, String cash, String type,
+    public Transaction(String transId, String animalId, String quantity, String cash, String type,
                        String date, String userId, String time, String prevTransId) {
         this.transId = transId;
         this.animalId = animalId;
@@ -29,7 +28,7 @@ public class Transaction {
         return animalId;
     }
 
-    public float getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 

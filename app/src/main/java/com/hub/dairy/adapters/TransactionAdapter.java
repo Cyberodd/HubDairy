@@ -56,8 +56,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         private void bind(Transaction transaction) {
             transDate.setText(transaction.getTime());
             transType.setText(transaction.getType());
-            float qty = transaction.getQuantity();
-            transQuantity.setText(String.valueOf(qty));
+            transQuantity.setText(transaction.getQuantity());
             transAmount.setText(transaction.getCash());
 
             if (transaction.getType().equals("Milk Sale")){

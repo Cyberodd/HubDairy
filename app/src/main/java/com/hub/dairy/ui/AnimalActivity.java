@@ -50,7 +50,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.hub.dairy.helpers.Constants.ANIMALS;
 import static com.hub.dairy.helpers.Constants.AVAILABLE;
 import static com.hub.dairy.helpers.Constants.CATEGORIES;
-import static com.hub.dairy.helpers.Constants.DATE_FORMAT;
+import static com.hub.dairy.helpers.Constants.LONG_DATE;
 import static com.hub.dairy.helpers.Constants.IMAGE_URL;
 import static com.hub.dairy.helpers.Constants.UPLOADS;
 
@@ -172,7 +172,7 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
     private void getAnimalInfo() {
         String category = mSpinner.getSelectedItem().toString();
         String status = mStatus.getSelectedItem().toString();
-        String regDate = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(new Date());
+        String regDate = new SimpleDateFormat(LONG_DATE, Locale.getDefault()).format(new Date());
         String name = mName.getText().toString().trim();
         String breed = mBreed.getText().toString().trim();
         String location = mLocation.getText().toString().trim();

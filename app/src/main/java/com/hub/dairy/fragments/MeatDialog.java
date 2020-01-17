@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
-import static com.hub.dairy.helpers.Constants.DATE_FORMAT;
+import static com.hub.dairy.helpers.Constants.LONG_DATE;
 import static com.hub.dairy.helpers.Constants.MEAT_PRODUCE;
 
 public class MeatDialog extends AppCompatDialogFragment {
@@ -75,7 +75,7 @@ public class MeatDialog extends AppCompatDialogFragment {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        date = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(new Date());
+        date = new SimpleDateFormat(LONG_DATE, Locale.getDefault()).format(new Date());
         meatRef = database.collection(MEAT_PRODUCE);
 
         if (user != null) {
