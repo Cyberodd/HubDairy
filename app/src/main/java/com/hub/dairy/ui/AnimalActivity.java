@@ -33,6 +33,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.hub.dairy.R;
 import com.hub.dairy.fragments.CategoryDialog;
+import com.hub.dairy.fragments.ParentDialog;
 import com.hub.dairy.models.Animal;
 import com.hub.dairy.models.Category;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -54,27 +55,27 @@ import static com.hub.dairy.helpers.Constants.LONG_DATE;
 import static com.hub.dairy.helpers.Constants.IMAGE_URL;
 import static com.hub.dairy.helpers.Constants.UPLOADS;
 
-public class AnimalActivity extends AppCompatActivity implements CategoryDialog.CategoryInterface {
+public class AnimalActivity extends AppCompatActivity implements CategoryDialog.CategoryInterface,
+        ParentDialog.ParentSet {
 
     private static final String TAG = "AnimalActivity";
     private Toolbar mToolbar;
     private EditText mName, mBreed, mLocation;
     private CircleImageView mAnimalImage;
-    private String gender, animalId, mDownloadUrl;
+    private String gender, animalId, mDownloadUrl, mAnimalBreed;
+    private String mUserId, mCategory, mAnimalStatus, mRegDate, mAnimalName, mAnimalLocation;
     private Button mSaveInfo;
     private RadioGroup mRadioGroup;
     private RadioButton mRdMale, mRdFemale;
     private int IMAGE_REQUEST_CODE = 1001;
     private LinearLayout displayText;
     private StorageReference mStorageReference;
-    private CollectionReference colRef;
+    private CollectionReference colRef, mCategoryRef;
     private ProgressBar mProgress;
     private Uri imageUri;
     private Spinner mSpinner, mStatus;
     private List<Category> mCategories = new ArrayList<>();
     private TextInputLayout inputName, inputBreed, inputLocation;
-    private String mUserId;
-    private CollectionReference mCategoryRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,20 +171,36 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
     }
 
     private void getAnimalInfo() {
-        String category = mSpinner.getSelectedItem().toString();
-        String status = mStatus.getSelectedItem().toString();
-        String regDate = new SimpleDateFormat(LONG_DATE, Locale.getDefault()).format(new Date());
-        String name = mName.getText().toString().trim();
-        String breed = mBreed.getText().toString().trim();
-        String location = mLocation.getText().toString().trim();
+        mCategory = mSpinner.getSelectedItem().toString();
+        mAnimalStatus = mStatus.getSelectedItem().toString();
+        mRegDate = new SimpleDateFormat(LONG_DATE, Locale.getDefault()).format(new Date());
+        mAnimalName = mName.getText().toString().trim();
+        mAnimalBreed = mBreed.getText().toString().trim();
+        mAnimalLocation = mLocation.getText().toString().trim();
 
-        if (!category.isEmpty()) {
-            if (!name.isEmpty()) {
-                if (!breed.isEmpty()) {
-                    if (!location.isEmpty()) {
-                        if (!status.isEmpty() && !status.equals("Choose One")) {
+        if (mAnimalStatus.equals("Born on Farm")) {
+            initDialog(mCategory);
+        } else {
+            doProceed("", "");
+        }
+    }
+
+    private void initDialog(String category) {
+        ParentDialog parentDialog = new ParentDialog();
+        Bundle args = new Bundle();
+        args.putString("category", category);
+        parentDialog.setArguments(args);
+        parentDialog.show(getSupportFragmentManager(), "ParentDialog");
+    }
+
+    private void doProceed(String father, String mother) {
+        if (!mCategory.isEmpty()) {
+            if (!mAnimalName.isEmpty()) {
+                if (!mAnimalBreed.isEmpty()) {
+                    if (!mAnimalLocation.isEmpty()) {
+                        if (!mAnimalStatus.isEmpty() && !mAnimalStatus.equals("Choose One")) {
                             if (gender != null) {
-                                saveInfo(category, name, breed, location, status, gender, regDate);
+                                saveInfo(gender, father, mother);
                             } else {
                                 Toast.makeText(this, "Please choose animal gender",
                                         Toast.LENGTH_SHORT).show();
@@ -206,20 +223,18 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
         }
     }
 
-    private void saveInfo(String category, String name, String breed, String location,
-                          String status, String gender, String regDate) {
+    private void saveInfo(String gender, String father, String mother) {
         if (mDownloadUrl != null) {
-            doSaveInfo(mDownloadUrl, category, name, breed, location, status, gender, regDate);
+            doSaveInfo(mDownloadUrl, gender, father, mother);
         } else {
             mDownloadUrl = IMAGE_URL;
-            doSaveInfo(mDownloadUrl, category, name, breed, location, status, gender, regDate);
+            doSaveInfo(mDownloadUrl, gender, father, mother);
         }
     }
 
-    private void doSaveInfo(String downloadUrl, String category, String name, String breed,
-                            String location, String status, String gender, String regDate) {
-        Animal animal = new Animal(animalId, name, breed, location, gender, regDate,
-                downloadUrl, category, status, AVAILABLE, mUserId);
+    private void doSaveInfo(String downloadUrl, String gender, String father, String mother) {
+        Animal animal = new Animal(animalId, mAnimalName, mAnimalBreed, mAnimalLocation, gender,
+                mRegDate, downloadUrl, mCategory, mAnimalStatus, AVAILABLE, father, mother, mUserId);
         colRef.document(animalId).set(animal)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -340,5 +355,10 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void proceed(String father, String mother) {
+        doProceed(father, mother);
     }
 }

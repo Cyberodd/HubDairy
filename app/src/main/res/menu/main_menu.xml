@@ -10,9 +10,4 @@
     <item android:id="@+id/action_profile"
         android:title="@string/profile"
         app:showAsAction="never" />
-
-    <item android:id="@+id/action_log_out"
-        android:title="@string/log_out"
-        app:showAsAction="never"/>
-
 </menu>

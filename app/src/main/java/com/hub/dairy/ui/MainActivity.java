@@ -9,7 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     private FloatingActionButton mFab, mAddAnimal, mAddTransaction;
     private boolean isFabOpen = true;
     private TextView txtAddAnimal, txtTransaction;
-    private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private String userId;
     private CollectionReference transRef;
@@ -61,8 +59,8 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAuth = FirebaseAuth.getInstance();
-        mUser = mAuth.getCurrentUser();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        mUser = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         transRef = database.collection(TRANSACTIONS);
         if (mUser != null) {
@@ -151,9 +149,6 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_log_out:
-                logOut();
-                return true;
             case R.id.action_reports:
                 toReports();
                 return true;
@@ -173,17 +168,6 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     private void toProfile() {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
-    }
-
-    private void logOut() {
-        if (mUser != null) {
-            mAuth.signOut();
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "logOut: User not logged in");
-        }
     }
 
     @Override

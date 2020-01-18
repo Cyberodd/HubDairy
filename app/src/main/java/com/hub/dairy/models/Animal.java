@@ -5,15 +5,15 @@ import android.os.Parcelable;
 
 public class Animal implements Parcelable {
 
-    private String animalId, animalName, animalBreed, location, gender,
-            regDate, imageUrl, category, status, availability, userId;
+    private String animalId, animalName, animalBreed, location, gender, regDate, imageUrl, category,
+            status, availability, father, mother, userId;
 
     public Animal() {
     }
 
     public Animal(String animalId, String animalName, String animalBreed, String location,
                    String gender, String regDate, String imageUrl, String category, String status,
-                   String availability, String userId) {
+                   String availability, String father, String mother, String userId) {
         this.animalId = animalId;
         this.animalName = animalName;
         this.animalBreed = animalBreed;
@@ -24,6 +24,8 @@ public class Animal implements Parcelable {
         this.category = category;
         this.status = status;
         this.availability = availability;
+        this.father = father;
+        this.mother = mother;
         this.userId = userId;
     }
 
@@ -38,6 +40,8 @@ public class Animal implements Parcelable {
         category = in.readString();
         status = in.readString();
         availability = in.readString();
+        father = in.readString();
+        mother = in.readString();
         userId = in.readString();
     }
 
@@ -53,6 +57,8 @@ public class Animal implements Parcelable {
         dest.writeString(category);
         dest.writeString(status);
         dest.writeString(availability);
+        dest.writeString(father);
+        dest.writeString(mother);
         dest.writeString(userId);
     }
 
@@ -111,6 +117,14 @@ public class Animal implements Parcelable {
 
     public String getAvailability() {
         return availability;
+    }
+
+    public String getFather() {
+        return father;
+    }
+
+    public String getMother() {
+        return mother;
     }
 
     public String getUserId() {

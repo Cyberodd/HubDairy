@@ -2,17 +2,17 @@ package com.hub.dairy.models;
 
 public class User {
 
-    private String userId, name, email, farmName, animalCount;
+    private String userId, name, email, farmName, phone;
 
     public User() {
     }
 
-    public User(String userId, String name, String email, String farmName, String animalCount) {
+    public User(String userId, String name, String email, String farmName, String phone) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.farmName = farmName;
-        this.animalCount = animalCount;
+        this.phone = phone;
     }
 
     public String getUserId() {
@@ -29,7 +29,8 @@ public class User {
         return farmName;
     }
 
-    public String getAnimalCount() {
-        return animalCount;
+    public String getPhone() {
+        return phone;
     }
+
 }

@@ -44,8 +44,10 @@
                         android:drawableEnd="@drawable/ic_edit"
                         android:text="@string/update_animal_info"
                         android:padding="8dp"
+                        android:textAllCaps="true"
                         android:layout_gravity="end"
                         android:drawablePadding="8dp"
+                        android:textSize="12sp"
                         android:textColor="@color/colorPrimary"/>
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/animal_image"
@@ -58,6 +60,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:weightSum="100"
+                        android:gravity="center"
                         android:layout_margin="8dp">
                         <TextView
                             android:layout_width="0dp"
@@ -66,18 +69,29 @@
                             android:text="@string/animal_name"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
-                        <TextView
-                            android:id="@+id/animal_name"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textAnimal"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="45dp"
                             android:layout_weight="60"
-                            android:text="@string/animal_name"
-                            android:padding="8dp"/>
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="?colorAccent"
+                            app:errorEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/animal_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:enabled="false"
+                                android:hint="@string/animal_name"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:weightSum="100"
+                        android:gravity="center"
                         android:layout_margin="8dp">
                         <TextView
                             android:layout_width="0dp"
@@ -86,18 +100,30 @@
                             android:text="@string/label_gender"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
-                        <TextView
-                            android:id="@+id/animal_gender"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textGender"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="45dp"
                             android:layout_weight="60"
-                            android:text="@string/label_gender"
-                            android:padding="8dp"/>
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="?colorAccent"
+                            app:errorEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/animal_gender"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:focusable="false"
+                                android:enabled="false"
+                                android:hint="@string/label_gender"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:weightSum="100"
+                        android:gravity="center"
                         android:layout_margin="8dp">
                         <TextView
                             android:layout_width="0dp"
@@ -106,18 +132,29 @@
                             android:layout_weight="40"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
-                        <TextView
-                            android:id="@+id/animal_location"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textLocation"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:text="@string/_location"
+                            android:layout_height="45dp"
                             android:layout_weight="60"
-                            android:padding="8dp"/>
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="?colorAccent"
+                            app:errorEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/animal_location"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:enabled="false"
+                                android:hint="@string/_location"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:weightSum="100"
+                        android:gravity="center"
                         android:layout_margin="8dp">
                         <TextView
                             android:layout_width="0dp"
@@ -126,18 +163,29 @@
                             android:text="@string/breed"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
-                        <TextView
-                            android:id="@+id/animal_breed"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textBreed"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="45dp"
                             android:layout_weight="60"
-                            android:text="@string/breed"
-                            android:padding="8dp"/>
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="?colorAccent"
+                            app:errorEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/animal_breed"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:enabled="false"
+                                android:hint="@string/breed"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:weightSum="100"
+                        android:gravity="center"
                         android:layout_margin="8dp">
                         <TextView
                             android:layout_width="0dp"
@@ -146,18 +194,30 @@
                             android:text="@string/category"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
-                        <TextView
-                            android:id="@+id/animal_category"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textCategory"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="45dp"
                             android:layout_weight="60"
-                            android:text="@string/category"
-                            android:padding="8dp"/>
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="?colorAccent"
+                            app:errorEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/animal_category"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:focusable="false"
+                                android:enabled="false"
+                                android:hint="@string/category"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:weightSum="100"
+                        android:gravity="center"
                         android:layout_margin="8dp">
                         <TextView
                             android:layout_width="0dp"
@@ -166,18 +226,30 @@
                             android:text="@string/status"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
-                        <TextView
-                            android:id="@+id/animal_status"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textStatus"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="45dp"
                             android:layout_weight="60"
-                            android:text="@string/status"
-                            android:padding="8dp"/>
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="?colorAccent"
+                            app:errorEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/animal_status"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:focusable="false"
+                                android:enabled="false"
+                                android:hint="@string/status"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:weightSum="100"
+                        android:gravity="center"
                         android:layout_margin="8dp">
                         <TextView
                             android:layout_width="0dp"
@@ -186,13 +258,24 @@
                             android:text="@string/registration_date"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
-                        <TextView
-                            android:id="@+id/animal_reg_date"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textRegDate"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="45dp"
                             android:layout_weight="60"
-                            android:text="@string/registration_date"
-                            android:padding="8dp"/>
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="?colorAccent"
+                            app:errorEnabled="true">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/animal_reg_date"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:focusable="false"
+                                android:enabled="false"
+                                android:hint="@string/registration_date"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"

@@ -4,13 +4,18 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -19,16 +24,23 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
 import com.hub.dairy.R;
 import com.hub.dairy.fragments.MeatDialog;
 import com.hub.dairy.fragments.MilkDialog;
 import com.hub.dairy.models.Animal;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.hub.dairy.helpers.Constants.ANIMALS;
+import static com.hub.dairy.helpers.Constants.ANIMAL_ID;
+import static com.hub.dairy.helpers.Constants.MALE;
+import static com.hub.dairy.helpers.Constants.USER_ID;
 
 public class DetailActivity extends AppCompatActivity implements MilkDialog.MilkInterface,
         MeatDialog.MeatInterface {
@@ -36,13 +48,15 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
     private static final String TAG = "DetailActivity";
     private Toolbar mToolbar;
     private Animal mAnimal;
-    private String animalName, animalId;
-    private TextView name, gender, location, regDate, breed, category, status, availability, update;
+    private String animalName, animalId, userId;
+    private TextView availability, update;
+    private EditText name, gender, location, regDate, breed, category, status;
     private CircleImageView image;
     private Button mShowDialog;
     private FirebaseFirestore mDatabase;
     private FirebaseUser mUser;
     private RelativeLayout addProduce;
+    private CollectionReference animalRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +66,13 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         mDatabase = FirebaseFirestore.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();
         mUser = auth.getCurrentUser();
+        animalRef = mDatabase.collection(ANIMALS);
+
+        if (mUser != null) {
+            userId = mUser.getUid();
+        } else {
+            Log.d(TAG, "onCreate: User not logged in");
+        }
 
         Intent intent = getIntent();
         mAnimal = intent.getParcelableExtra("animal");
@@ -70,13 +91,15 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
 
         mShowDialog.setOnClickListener(v -> openDialog());
 
-        update.setOnClickListener(v -> updateInfo());
+        update.setOnClickListener(v -> enableFields());
 
         displayAnimalInfo();
     }
 
-    private void updateInfo() {
-        Toast.makeText(this, "Opening update dialog", Toast.LENGTH_SHORT).show();
+    private void enableFields() {
+        name.setEnabled(true);
+        location.setEnabled(true);
+        breed.setEnabled(true);
     }
 
     private void displayAnimalInfo() {
@@ -89,7 +112,7 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         status.setText(mAnimal.getStatus());
         availability.setText(mAnimal.getAvailability());
 
-        if (mAnimal.getAvailability().equals("sold")){
+        if (mAnimal.getAvailability().equals("sold")) {
             addProduce.setVisibility(View.GONE);
         } else {
             addProduce.setVisibility(View.VISIBLE);
@@ -129,6 +152,45 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         supportFinishAfterTransition();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_save) {
+            updateInfo();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void updateInfo() {
+        if (!name.isEnabled() || !location.isEnabled() || !breed.isEnabled()) {
+            Toast.makeText(this, R.string.unable_to_update, Toast.LENGTH_SHORT).show();
+        } else {
+            String updateName = name.getText().toString().trim();
+            String updateLoc = location.getText().toString().trim();
+            String updateBreed = breed.getText().toString().trim();
+
+            Map<String, Object> updateInfo = new HashMap<>();
+            updateInfo.put("animalName", updateName);
+            updateInfo.put("location", updateLoc);
+            updateInfo.put("animalBreed", updateBreed);
+
+            animalRef.document(animalId)
+                    .set(updateInfo, SetOptions.merge()).addOnSuccessListener(aVoid -> {
+                name.setEnabled(false);
+                location.setEnabled(false);
+                breed.setEnabled(false);
+                Toast.makeText(this, R.string.success_msg, Toast.LENGTH_SHORT).show();
+            });
+        }
+    }
+
     private void openDialog() {
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -141,7 +203,7 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         Button btnMeat = dialog.findViewById(R.id.btnMeat);
         Button btnMilk = dialog.findViewById(R.id.btnMilk);
 
-        if (mAnimal.getGender().equals("Male")){
+        if (mAnimal.getGender().equals(MALE)) {
             btnMilk.setVisibility(View.GONE);
         } else {
             btnMilk.setVisibility(View.VISIBLE);

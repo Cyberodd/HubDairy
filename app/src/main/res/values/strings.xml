@@ -3,9 +3,6 @@
     <string name="title_activity_test">test</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="log_out">Log Out</string>
     <string name="search">Search</string>
     <string name="profile">Profile</string>
@@ -81,7 +78,7 @@
     <string name="availability_">Availability</string>
     <string name="available">Available</string>
     <string name="sold">Sold</string>
-    <string name="update_animal_info">Update Animal Info</string>
+    <string name="update_animal_info">Update Info</string>
     <string name="reports">Reports</string>
     <string name="report_date">Search Date to generate report</string>
     <string name="no_record">Selected date doesn\'t contain any record</string>
@@ -104,6 +101,15 @@
     <string name="edit_account_info">Edit Account Info</string>
     <string name="no_of_animals">No. of Animals</string>
     <string name="phone">Phone</string>
+    <string name="choose_mother">Choose Mother</string>
+    <string name="choose_father">Choose Father</string>
+    <string name="selection_info">You Selected Born on Farm. Please select from the below options to proceed</string>
+    <string name="no_parents">No Parents</string>
+    <string name="_save">SAVE</string>
+    <string name="success_msg">Animal info updated successfully</string>
+    <string name="unable_to_update">Can\'t update animal info right now</string>
+    <string name="failed_user">Failed to get user details</string>
+    <string name="save_user_info">Save User Info</string>
 
     <string-array name="status">
         <item>Choose One</item>
