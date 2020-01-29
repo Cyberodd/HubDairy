@@ -109,54 +109,6 @@
                     android:hint="@string/enter_cash"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:id="@+id/milkPurchase"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-<!--                <com.google.android.material.textfield.TextInputLayout-->
-<!--                    android:id="@+id/textAnimal"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-<!--                    android:layout_margin="8dp"-->
-<!--                    app:boxStrokeColor="?colorAccent"-->
-<!--                    app:errorEnabled="true">-->
-
-<!--                    <AutoCompleteTextView-->
-<!--                        android:id="@+id/ac_animal_name"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:hint="@string/search_animal_name"-->
-<!--                        android:completionThreshold="1"-->
-<!--                        android:singleLine="true"-->
-<!--                        android:layout_gravity="center_horizontal"-->
-<!--                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-<!--                        android:layout_marginStart="4dp"-->
-<!--                        android:padding="16dp"-->
-<!--                        android:textColor="?colorAccent"/>-->
-<!--                </com.google.android.material.textfield.TextInputLayout>-->
-
-<!--                <com.google.android.material.textfield.TextInputLayout-->
-<!--                    android:id="@+id/textDate"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-<!--                    app:boxStrokeColor="?colorAccent"-->
-<!--                    app:errorEnabled="true"-->
-<!--                    android:layout_margin="8dp">-->
-
-<!--                    <com.google.android.material.textfield.TextInputEditText-->
-<!--                        android:id="@+id/inputDate"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:hint="@string/enter_date"-->
-<!--                        android:focusable="false"-->
-<!--                        android:textColor="?colorAccent"/>-->
-<!--                </com.google.android.material.textfield.TextInputLayout>-->
-
-            </LinearLayout>
-
             <Button
                 android:id="@+id/btnMilkSale"
                 android:layout_width="match_parent"

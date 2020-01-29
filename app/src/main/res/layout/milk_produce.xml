@@ -34,6 +34,26 @@
                     android:layout_gravity="center"
                     android:textColor="@color/colorPrimary"
                     android:textAllCaps="true"/>
+                <RadioGroup
+                    android:id="@+id/rgSelection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="8dp"
+                    android:orientation="horizontal">
+                    <RadioButton
+                        android:id="@+id/rbMorning"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:text="@string/morning"/>
+                    <RadioButton
+                        android:id="@+id/rbAfternoon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:text="@string/afternoon"/>
+                </RadioGroup>
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textQuantity"
                     android:layout_width="match_parent"

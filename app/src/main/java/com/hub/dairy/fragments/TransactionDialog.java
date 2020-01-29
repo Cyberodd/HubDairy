@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -39,7 +37,6 @@ import com.hub.dairy.models.Animal;
 import com.hub.dairy.models.MilkProduce;
 import com.hub.dairy.models.Transaction;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,6 +56,7 @@ import static com.hub.dairy.helpers.Constants.FEMALE;
 import static com.hub.dairy.helpers.Constants.GENDER;
 import static com.hub.dairy.helpers.Constants.LONG_DATE;
 import static com.hub.dairy.helpers.Constants.MILK_PRODUCE;
+import static com.hub.dairy.helpers.Constants.PRICE_PER_LITRE;
 import static com.hub.dairy.helpers.Constants.REG_DATE;
 import static com.hub.dairy.helpers.Constants.SHORT_DATE;
 import static com.hub.dairy.helpers.Constants.STATUS;
@@ -80,7 +78,6 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     private ProgressBar mProgress;
     private Button milkSale, animalSale;
     private TransInterface mTransInterface;
-    private LinearLayout milkPurchase;
     private Animal mAnimal;
     private List<Animal> mAnimals;
     private List<Animal> allAnimals;
@@ -104,6 +101,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
+
         today = new SimpleDateFormat(SHORT_DATE, Locale.getDefault()).format(new Date());
         time = new SimpleDateFormat(LONG_DATE, Locale.getDefault()).format(new Date());
         animalRef = database.collection(ANIMALS);
@@ -117,14 +115,6 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         }
 
         loadTransactionType();
-
-        String type = transSpinner.getSelectedItem().toString();
-        if (type.equals("Animal Sale")) {
-            milkPurchase.setVisibility(View.GONE);
-            txtQuantity.setVisibility(View.GONE);
-        } else {
-            milkPurchase.setVisibility(View.VISIBLE);
-        }
 
         mAnimalName.setOnItemClickListener((parent, view1, position, id) -> {
             animalName = (String) parent.getItemAtPosition(position);
@@ -161,7 +151,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
                 textAnimal.setError("");
                 if (!date.isEmpty()) {
                     textDate.setError("");
-                    if (date.equals(today)){
+                    if (date.equals(today)) {
                         if (!cash.isEmpty()) {
                             doSaleAnimal(transId, date, cash);
                         } else {
@@ -232,7 +222,6 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         String transId = transRef.document().getId();
         String date = inputDate.getText().toString();
         String quantity = inputQuantity.getText().toString().trim();
-        String cash = inputCash.getText().toString().trim();
         validateAnimalName();
         if (!mAnimalName.getText().toString().isEmpty()) {
             textAnimal.setError("");
@@ -240,15 +229,10 @@ public class TransactionDialog extends AppCompatDialogFragment implements
                 textAnimal.setError("");
                 if (!date.isEmpty()) {
                     textDate.setError("");
-                    if (date.equals(today)){
+                    if (date.equals(today)) {
                         if (!quantity.isEmpty()) {
                             txtQuantity.setError("");
-                            if (!cash.isEmpty()) {
-                                textCash.setError("");
-                                fetchPrevTransactions(transId, date, quantity, cash);
-                            } else {
-                                textCash.setError("Please enter amount");
-                            }
+                            checkQuantity(transId, date, quantity);
                         } else {
                             txtQuantity.setError("Please enter quantity");
                         }
@@ -266,17 +250,47 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         }
     }
 
+    private void checkQuantity(String transId, String date, String quantity) {
+        List<Float> floatList = new ArrayList<>();
+        for (int i = 0; i < mMilkProduces.size(); i++) {
+            String qty = mMilkProduces.get(i).getQuantity();
+            float f = Float.parseFloat(qty);
+            floatList.add(f);
+        }
+        sumQuantities(floatList, transId, date, quantity);
+    }
+
+    private void sumQuantities(List<Float> floatList, String transId, String date, String quantity) {
+        float totalQty = 0;
+        for (int i = 0; i < floatList.size(); i++) {
+            totalQty += floatList.get(i);
+        }
+        performCheck(totalQty, transId, date, quantity);
+    }
+
+    private void performCheck(float totalQty, String transId, String date, String quantity) {
+        float qty = Float.parseFloat(quantity);
+        if (qty <= totalQty) {
+            float totalCash = qty * PRICE_PER_LITRE;
+            txtQuantity.setError("");
+            String finalPrice = String.format(Locale.ENGLISH, "%.2f", totalCash);
+            fetchPrevTransactions(transId, date, quantity, finalPrice);
+        } else {
+            txtQuantity.setError("Total quantity produced today was " + totalQty + " litres");
+            Toast.makeText(getContext(), R.string.error_qty_info, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void getMilkProduce() {
         String date = new SimpleDateFormat(SHORT_DATE, Locale.getDefault()).format(new Date());
-        Query query = milkRef.whereEqualTo(ANIMAL_ID, animalId)
-                .whereEqualTo(DATE, date);
+        Query query = milkRef.whereEqualTo(ANIMAL_ID, animalId).whereEqualTo(DATE, date);
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             if (queryDocumentSnapshots != null) {
                 mMilkProduces = new ArrayList<>();
                 mMilkProduces.addAll(queryDocumentSnapshots.toObjects(MilkProduce.class));
                 checkProducesSize(mMilkProduces);
             } else {
-                textAnimal.setError("No milk produce for the selected animal today");
+                textAnimal.setError("Milk produce not added for the selected animal");
             }
         });
     }
@@ -285,9 +299,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         if (!milkProduces.isEmpty()) {
             validateInputs();
         } else {
-            textAnimal.setError("No milk produce for the selected animal today");
-            Toast.makeText(getContext(), "Consider adding this animal's milk produce first",
-                    Toast.LENGTH_SHORT).show();
+            textAnimal.setError("Milk produce not added for the selected animal");
         }
     }
 
@@ -357,7 +369,6 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         inputCash = view.findViewById(R.id.inputCash);
         milkSale = view.findViewById(R.id.btnMilkSale);
         animalSale = view.findViewById(R.id.btnAnimalSale);
-        milkPurchase = view.findViewById(R.id.milkPurchase);
         inputQuantity = view.findViewById(R.id.inputQuantity);
         mProgress = view.findViewById(R.id.transProgress);
         txtQuantity = view.findViewById(R.id.txtQuantity);
@@ -409,7 +420,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         textAnimal.setVisibility(View.VISIBLE);
         textDate.setVisibility(View.VISIBLE);
         txtQuantity.setVisibility(View.VISIBLE);
-        textCash.setVisibility(View.VISIBLE);
+        textCash.setVisibility(View.GONE);
         milkSale.setVisibility(View.VISIBLE);
         animalSale.setVisibility(View.GONE);
     }

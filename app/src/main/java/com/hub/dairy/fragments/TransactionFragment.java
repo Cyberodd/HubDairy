@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,8 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.hub.dairy.R;
 import com.hub.dairy.adapters.TransactionAdapter;
 import com.hub.dairy.helpers.TransactionEvent;
@@ -47,6 +50,7 @@ public class TransactionFragment extends Fragment {
     private String userId;
     private List<Transaction> mTransactions = new ArrayList<>();
     private TransactionAdapter mTransactionAdapter;
+    private DocumentSnapshot mLastQueriedDocument;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,32 +74,39 @@ public class TransactionFragment extends Fragment {
             Log.d(TAG, "onActivityCreated: User not logged in");
         }
 
-        mTransactionAdapter = new TransactionAdapter(mTransactions);
+        getTransactions();
     }
 
-    private void loadTransactions() {
+    private void getTransactions() {
+        Query query;
+        if (mLastQueriedDocument != null) {
+            query = transRef.whereEqualTo(USER_ID, userId)
+                    .orderBy(TIME, Query.Direction.DESCENDING)
+                    .endBefore(mLastQueriedDocument);
+        } else {
+            query = transRef.whereEqualTo(USER_ID, userId).orderBy(TIME, Query.Direction.DESCENDING);
+        }
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Transaction transaction = snapshot.toObject(Transaction.class);
+                mTransactions.add(transaction);
+            }
+            if (queryDocumentSnapshots.size() != 0) {
+                mLastQueriedDocument = queryDocumentSnapshots.getDocuments()
+                        .get(queryDocumentSnapshots.size() - 1);
+            }
+            populateRecycler(mTransactions);
+        });
+    }
+
+    private void populateRecycler(List<Transaction> transactions) {
+        mTransactionAdapter = new TransactionAdapter(transactions);
         mProgress.setVisibility(View.VISIBLE);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mTransRv.setHasFixedSize(true);
         mTransRv.setLayoutManager(manager);
-
-        Query query = transRef.whereEqualTo(USER_ID, userId);
-        query.orderBy(TIME, Query.Direction.DESCENDING)
-                .get().addOnSuccessListener(queryDocumentSnapshots -> {
-            if (!queryDocumentSnapshots.isEmpty()) {
-                loadUpdates(queryDocumentSnapshots.toObjects(Transaction.class));
-                mProgress.setVisibility(View.GONE);
-            } else {
-                mProgress.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "No transactions", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void loadUpdates(List<Transaction> toObjects) {
-        mTransactions.clear();
-        mTransactions.addAll(toObjects);
         mTransRv.setAdapter(mTransactionAdapter);
+        mProgress.setVisibility(View.GONE);
         mTransactionAdapter.notifyDataSetChanged();
     }
 
@@ -105,10 +116,11 @@ public class TransactionFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void getTransactions(TransactionEvent event) {
-        mTransactions.clear();
-        List<Transaction> transactions = event.getTransactions();
-        loadUpdates(transactions);
+    public void getTransactions(TransactionEvent event){
+        if (event != null){
+            mTransactions = event.getTransactions();
+            populateRecycler(mTransactions);
+        }
     }
 
     @Override
@@ -121,13 +133,6 @@ public class TransactionFragment extends Fragment {
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume: called");
-        loadTransactions();
     }
 }
 

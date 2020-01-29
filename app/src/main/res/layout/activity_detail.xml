@@ -65,7 +65,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="40"
+                            android:layout_weight="30"
                             android:text="@string/animal_name"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
@@ -73,7 +73,7 @@
                             android:id="@+id/textAnimal"
                             android:layout_width="0dp"
                             android:layout_height="45dp"
-                            android:layout_weight="60"
+                            android:layout_weight="70"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             app:boxStrokeColor="?colorAccent"
                             app:errorEnabled="true">
@@ -96,7 +96,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="40"
+                            android:layout_weight="30"
                             android:text="@string/label_gender"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
@@ -104,7 +104,7 @@
                             android:id="@+id/textGender"
                             android:layout_width="0dp"
                             android:layout_height="45dp"
-                            android:layout_weight="60"
+                            android:layout_weight="70"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             app:boxStrokeColor="?colorAccent"
                             app:errorEnabled="true">
@@ -129,14 +129,14 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="@string/_location"
-                            android:layout_weight="40"
+                            android:layout_weight="30"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textLocation"
                             android:layout_width="0dp"
                             android:layout_height="45dp"
-                            android:layout_weight="60"
+                            android:layout_weight="70"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             app:boxStrokeColor="?colorAccent"
                             app:errorEnabled="true">
@@ -159,7 +159,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="40"
+                            android:layout_weight="30"
                             android:text="@string/breed"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
@@ -167,7 +167,7 @@
                             android:id="@+id/textBreed"
                             android:layout_width="0dp"
                             android:layout_height="45dp"
-                            android:layout_weight="60"
+                            android:layout_weight="70"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             app:boxStrokeColor="?colorAccent"
                             app:errorEnabled="true">
@@ -190,7 +190,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="40"
+                            android:layout_weight="30"
                             android:text="@string/category"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
@@ -198,7 +198,7 @@
                             android:id="@+id/textCategory"
                             android:layout_width="0dp"
                             android:layout_height="45dp"
-                            android:layout_weight="60"
+                            android:layout_weight="70"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             app:boxStrokeColor="?colorAccent"
                             app:errorEnabled="true">
@@ -222,7 +222,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="40"
+                            android:layout_weight="30"
                             android:text="@string/status"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
@@ -230,7 +230,7 @@
                             android:id="@+id/textStatus"
                             android:layout_width="0dp"
                             android:layout_height="45dp"
-                            android:layout_weight="60"
+                            android:layout_weight="70"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             app:boxStrokeColor="?colorAccent"
                             app:errorEnabled="true">
@@ -254,7 +254,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="40"
+                            android:layout_weight="30"
                             android:text="@string/registration_date"
                             android:padding="8dp"
                             android:textColor="@color/colorPrimary"/>
@@ -262,7 +262,7 @@
                             android:id="@+id/textRegDate"
                             android:layout_width="0dp"
                             android:layout_height="45dp"
-                            android:layout_weight="60"
+                            android:layout_weight="70"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             app:boxStrokeColor="?colorAccent"
                             app:errorEnabled="true">
@@ -285,7 +285,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="40"
+                            android:layout_weight="30"
                             android:padding="8dp"
                             android:text="@string/availability_"
                             android:textColor="@color/colorPrimary"/>
@@ -293,7 +293,7 @@
                             android:id="@+id/availability"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="60"
+                            android:layout_weight="70"
                             android:text="@string/availability_"
                             android:padding="8dp"
                             android:textColor="@color/colorRed"

@@ -27,4 +27,5 @@ public class Constants {
     public static final String AVAILABLE = "available";
     public static final String REPORTS = "reports";
     public static final String CATEGORY = "category";
+    public static final int PRICE_PER_LITRE = 50;
 }

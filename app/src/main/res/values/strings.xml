@@ -6,7 +6,7 @@
     <string name="log_out">Log Out</string>
     <string name="search">Search</string>
     <string name="profile">Profile</string>
-    <string name="name">Name</string>
+    <string name="name">Animal name</string>
     <string name="test_name">Test Name</string>
     <string name="breed">Breed</string>
     <string name="jersey">Jersey</string>
@@ -51,7 +51,7 @@
     <string name="_location">Location</string>
     <string name="category">Category</string>
     <string name="status">Status</string>
-    <string name="registration_date">Registration Date</string>
+    <string name="registration_date">Date of Reg</string>
     <string name="milk_produced">Add Milk Produced (Today)</string>
     <string name="quantity">Quantity Produced (Litres)</string>
     <string name="_quantity">Quantity Produced (Kgs)</string>
@@ -122,4 +122,10 @@
         <item>Milk Sale</item>
         <item>Animal Sale</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="morning">Morning</string>
+    <string name="afternoon">Afternoon</string>
+    <string name="error_qty_info">Quantity entered should not exceed total quantity</string>
 </resources>

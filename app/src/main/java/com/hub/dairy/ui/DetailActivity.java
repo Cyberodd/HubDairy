@@ -24,7 +24,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 import com.hub.dairy.R;
 import com.hub.dairy.fragments.MeatDialog;
@@ -38,9 +37,7 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.hub.dairy.helpers.Constants.ANIMALS;
-import static com.hub.dairy.helpers.Constants.ANIMAL_ID;
 import static com.hub.dairy.helpers.Constants.MALE;
-import static com.hub.dairy.helpers.Constants.USER_ID;
 
 public class DetailActivity extends AppCompatActivity implements MilkDialog.MilkInterface,
         MeatDialog.MeatInterface {
@@ -48,7 +45,7 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
     private static final String TAG = "DetailActivity";
     private Toolbar mToolbar;
     private Animal mAnimal;
-    private String animalName, animalId, userId;
+    private String animalName, animalId;
     private TextView availability, update;
     private EditText name, gender, location, regDate, breed, category, status;
     private CircleImageView image;
@@ -67,12 +64,6 @@ public class DetailActivity extends AppCompatActivity implements MilkDialog.Milk
         FirebaseAuth auth = FirebaseAuth.getInstance();
         mUser = auth.getCurrentUser();
         animalRef = mDatabase.collection(ANIMALS);
-
-        if (mUser != null) {
-            userId = mUser.getUid();
-        } else {
-            Log.d(TAG, "onCreate: User not logged in");
-        }
 
         Intent intent = getIntent();
         mAnimal = intent.getParcelableExtra("animal");

@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,7 +50,9 @@ public class MilkDialog extends AppCompatDialogFragment {
     private CollectionReference milkRef;
     private ProgressBar mProgress;
     private int produceCount;
-    private String mMilkProdId;
+    private String mMilkProdId, timeOfDay;
+    private RadioGroup mRadioGroup;
+    private RadioButton rbMorning, rbAfternoon;
 
     @NonNull
     @Override
@@ -61,6 +65,9 @@ public class MilkDialog extends AppCompatDialogFragment {
         mQuantity = view.findViewById(R.id.quantity);
         txtQuantity = view.findViewById(R.id.textQuantity);
         mProgress = view.findViewById(R.id.produceProgress);
+        mRadioGroup = view.findViewById(R.id.rgSelection);
+        rbMorning = view.findViewById(R.id.rbMorning);
+        rbAfternoon = view.findViewById(R.id.rbAfternoon);
         Button submit = view.findViewById(R.id.btnSubmit);
 
         Bundle bundle = getArguments();
@@ -96,8 +103,23 @@ public class MilkDialog extends AppCompatDialogFragment {
 
         getMilkProduceEntries();
 
+        listenToRadioButton();
+
         submit.setOnClickListener(v -> saveInfo(alertDialog));
         return alertDialog;
+    }
+
+    private void listenToRadioButton() {
+        mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.rbMorning:
+                    timeOfDay = rbMorning.getText().toString();
+                    break;
+                case R.id.rbAfternoon:
+                    timeOfDay = rbAfternoon.getText().toString();
+                    break;
+            }
+        });
     }
 
     private void getMilkProduceEntries() {
@@ -114,18 +136,22 @@ public class MilkDialog extends AppCompatDialogFragment {
 
     private void saveInfo(AlertDialog alertDialog) {
         String quantity = mQuantity.getText().toString();
-        if (!quantity.isEmpty()) {
-            txtQuantity.setError("");
-            doSubmitInfo(quantity, alertDialog);
+        if (timeOfDay != null) {
+            if (!quantity.isEmpty()) {
+                txtQuantity.setError("");
+                doSubmitInfo(quantity, alertDialog);
+            } else {
+                txtQuantity.setError("Please input quantity of milk produced first");
+            }
         } else {
-            txtQuantity.setError("Please input quantity of milk produced first");
+            Toast.makeText(getContext(), "Time of day required", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void doSubmitInfo(String quantity, AlertDialog alertDialog) {
         mProgress.setVisibility(View.VISIBLE);
-        MilkProduce milkProd =
-                new MilkProduce(mMilkProdId, userId, animalId, animalName, quantity, date, time);
+        MilkProduce milkProd = new MilkProduce(mMilkProdId, userId, animalId, animalName,
+                quantity, date, time, timeOfDay);
         if (produceCount < 2) {
             milkRef.document(mMilkProdId).set(milkProd).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -150,7 +176,6 @@ public class MilkDialog extends AppCompatDialogFragment {
             txtQuantity.setError("Can't enter more than 2 entries on the same day");
         }
     }
-
 
     @Override
     public void onAttach(@NonNull Context context) {

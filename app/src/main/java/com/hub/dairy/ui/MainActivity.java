@@ -26,6 +26,7 @@ import com.google.firebase.firestore.Query;
 import com.hub.dairy.R;
 import com.hub.dairy.adapters.TabPagerAdapter;
 import com.hub.dairy.fragments.AnimalFragment;
+import com.hub.dairy.fragments.ProgressFragment;
 import com.hub.dairy.fragments.TransactionDialog;
 import com.hub.dairy.fragments.TransactionFragment;
 import com.hub.dairy.helpers.TransactionEvent;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         pagerAdapter.addFragments(new AnimalFragment(), "Animals");
         pagerAdapter.addFragments(new TransactionFragment(), "Transactions");
+        pagerAdapter.addFragments(new ProgressFragment(), "Progress");
         mPager.setAdapter(pagerAdapter);
         mTabLayout.setupWithViewPager(mPager);
 
