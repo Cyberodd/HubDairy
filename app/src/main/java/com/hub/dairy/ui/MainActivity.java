@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,9 +26,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.hub.dairy.R;
 import com.hub.dairy.adapters.TabPagerAdapter;
+import com.hub.dairy.dialogs.MeatDialog;
+import com.hub.dairy.dialogs.MilkDialog;
 import com.hub.dairy.fragments.AnimalFragment;
-import com.hub.dairy.fragments.ProgressFragment;
-import com.hub.dairy.fragments.TransactionDialog;
+import com.hub.dairy.dialogs.TransactionDialog;
 import com.hub.dairy.fragments.TransactionFragment;
 import com.hub.dairy.helpers.TransactionEvent;
 import com.hub.dairy.models.Transaction;
@@ -37,11 +39,13 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.hub.dairy.helpers.Constants.ANIMALS;
 import static com.hub.dairy.helpers.Constants.TIME;
 import static com.hub.dairy.helpers.Constants.TRANSACTIONS;
 import static com.hub.dairy.helpers.Constants.USER_ID;
 
-public class MainActivity extends AppCompatActivity implements TransactionDialog.TransInterface {
+public class MainActivity extends AppCompatActivity implements TransactionDialog.TransInterface,
+        MilkDialog.MilkInterface, MeatDialog.MeatInterface {
 
     private static final String TAG = "MainActivity";
     private Toolbar mToolbar;
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     private boolean isFabOpen = true;
     private TextView txtAddAnimal, txtTransaction;
     private FirebaseUser mUser;
+    private FirebaseFirestore mDatabase;
     private String userId;
     private CollectionReference transRef;
     private List<Transaction> mTransactions = new ArrayList<>();
@@ -63,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
         FirebaseAuth auth = FirebaseAuth.getInstance();
         mUser = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
+        mDatabase = FirebaseFirestore.getInstance();
         transRef = database.collection(TRANSACTIONS);
         if (mUser != null) {
             userId = mUser.getUid();
@@ -79,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         pagerAdapter.addFragments(new AnimalFragment(), "Animals");
         pagerAdapter.addFragments(new TransactionFragment(), "Transactions");
-        pagerAdapter.addFragments(new ProgressFragment(), "Progress");
         mPager.setAdapter(pagerAdapter);
         mTabLayout.setupWithViewPager(mPager);
 
@@ -207,5 +212,31 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
         TransactionEvent event = new TransactionEvent();
         event.setTransactions(transactions);
         EventBus.getDefault().post(event);
+    }
+
+    @Override
+    public void notifyInput() {
+        Toast.makeText(this, "Produce added", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void isSuccess(String animalId) {
+        removeAnimalFromDb(animalId);
+    }
+
+    private void removeAnimalFromDb(String animalId) {
+        if (mUser != null) {
+            CollectionReference animalRef = mDatabase.collection(ANIMALS)
+                    .document(mUser.getUid()).collection(ANIMALS);
+            animalRef.document(animalId).delete().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(this, "Produce added", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Log.d(TAG, "removeAnimalFromDb: User not logged in");
+        }
     }
 }

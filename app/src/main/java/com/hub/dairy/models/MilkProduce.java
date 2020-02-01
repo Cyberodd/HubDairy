@@ -2,21 +2,22 @@ package com.hub.dairy.models;
 
 public class MilkProduce {
 
-    private String produceId, userId, animalId, animalName, quantity, date, time, timeOfDay;
+    private String produceId, userId, animalId, animalName, mrgQty, date, time, evnQty, totalQty;
 
     public MilkProduce() {
     }
 
     public MilkProduce(String produceId, String userId, String animalId, String animalName,
-                       String quantity, String date, String time, String timeOfDay) {
+                        String mrgQty, String date, String time, String evnQty, String totalQty) {
         this.produceId = produceId;
         this.userId = userId;
         this.animalId = animalId;
         this.animalName = animalName;
-        this.quantity = quantity;
+        this.mrgQty = mrgQty;
         this.date = date;
         this.time = time;
-        this.timeOfDay = timeOfDay;
+        this.evnQty = evnQty;
+        this.totalQty = totalQty;
     }
 
     public String getProduceId() {
@@ -35,8 +36,8 @@ public class MilkProduce {
         return animalName;
     }
 
-    public String getQuantity() {
-        return quantity;
+    public String getMrgQty() {
+        return mrgQty;
     }
 
     public String getDate() {
@@ -47,7 +48,11 @@ public class MilkProduce {
         return time;
     }
 
-    public String getTimeOfDay() {
-        return timeOfDay;
+    public String getEvnQty() {
+        return evnQty;
+    }
+
+    public String getTotalQty() {
+        return totalQty;
     }
 }

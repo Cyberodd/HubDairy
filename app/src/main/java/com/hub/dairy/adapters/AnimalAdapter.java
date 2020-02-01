@@ -3,6 +3,8 @@ package com.hub.dairy.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,6 +52,8 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalHold
         TextView animalName, animalBreed;
         CircleImageView animalImage;
         AnimalClick mAnimalClick;
+        LinearLayout layoutClick;
+        ImageView btnAddProduce;
 
         AnimalHolder(@NonNull View itemView, AnimalClick animalClick) {
             super(itemView);
@@ -57,7 +61,12 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalHold
             animalName = itemView.findViewById(R.id.animalName);
             animalBreed = itemView.findViewById(R.id.animalBreed);
             animalImage = itemView.findViewById(R.id.animalImage);
-            itemView.setOnClickListener(this);
+            layoutClick = itemView.findViewById(R.id.animalClick);
+            btnAddProduce = itemView.findViewById(R.id.addProduce);
+
+            layoutClick.setOnClickListener(this);
+
+            btnAddProduce.setOnClickListener(this);
         }
 
         private void bind(Animal animal) {
@@ -73,11 +82,11 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalHold
 
         @Override
         public void onClick(View v) {
-            mAnimalClick.onAnimalClick(mAnimals.get(getAdapterPosition()));
+            mAnimalClick.onAnimalClick(mAnimals.get(getAdapterPosition()), v);
         }
     }
 
     public interface AnimalClick{
-        void onAnimalClick(Animal animal);
+        void onAnimalClick(Animal animal, View view);
     }
 }

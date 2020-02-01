@@ -1,4 +1,4 @@
-package com.hub.dairy.fragments;
+package com.hub.dairy.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;

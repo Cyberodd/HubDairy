@@ -1,4 +1,4 @@
-package com.hub.dairy.fragments;
+package com.hub.dairy.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -253,7 +253,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     private void checkQuantity(String transId, String date, String quantity) {
         List<Float> floatList = new ArrayList<>();
         for (int i = 0; i < mMilkProduces.size(); i++) {
-            String qty = mMilkProduces.get(i).getQuantity();
+            String qty = mMilkProduces.get(i).getTotalQty();
             float f = Float.parseFloat(qty);
             floatList.add(f);
         }

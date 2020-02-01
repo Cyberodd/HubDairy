@@ -1,4 +1,4 @@
-package com.hub.dairy.fragments;
+package com.hub.dairy.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -107,7 +107,7 @@ public class MeatDialog extends AppCompatDialogFragment {
             if (task.isSuccessful()) {
                 mProgress.setVisibility(View.GONE);
                 mQuantity.setText("");
-                listener.isSuccess();
+                listener.isSuccess(animalId);
                 alertDialog.dismiss();
             } else {
                 mProgress.setVisibility(View.GONE);
@@ -133,6 +133,6 @@ public class MeatDialog extends AppCompatDialogFragment {
     }
 
     public interface MeatInterface {
-        void isSuccess();
+        void isSuccess(String animalId);
     }
 }

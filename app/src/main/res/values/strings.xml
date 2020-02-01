@@ -123,9 +123,16 @@
         <item>Animal Sale</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="morning">Morning</string>
     <string name="afternoon">Afternoon</string>
     <string name="error_qty_info">Quantity entered should not exceed total quantity</string>
+    <string name="option_selection">Tap on Animal Detail to view the selected animal\'s info or Reports to view the selected animal\'s produce reports</string>
+    <string name="animal_info">Animal Info</string>
+    <string name="animal_reports">Reports</string>
+    <string name="animal_details">Animal Details</string>
+    <string name="name_tag">Name/Tag</string>
+    <string name="update">Update</string>
+    <string name="evening">Evening Qty (litres)</string>
+    <string name="morning_">Morning Qty (litres)</string>
+    <string name="total_">Total Qty Produced (litres)</string>
 </resources>
