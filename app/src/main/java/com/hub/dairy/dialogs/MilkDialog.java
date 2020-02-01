@@ -53,12 +53,12 @@ public class MilkDialog extends AppCompatDialogFragment {
     private String date, time, userId, animalId, animalName;
     private CollectionReference milkRef;
     private ProgressBar mProgress;
-    private boolean canAdd = false;
     private String mMilkProdId, timeOfDay;
     private RadioGroup mRadioGroup;
     private RadioButton rbMorning, rbAfternoon;
     private String mMrgQty;
     private String mEvgQty;
+    private MilkProduce mProduce;
 
     @NonNull
     @Override
@@ -129,46 +129,38 @@ public class MilkDialog extends AppCompatDialogFragment {
     }
 
     private void getMilkProduceEntries() {
-        Query prodQuery = milkRef.whereEqualTo(DATE, date)
-                .whereEqualTo(ANIMAL_ID, animalId);
-        prodQuery.get().addOnSuccessListener(queryDocumentSnapshots -> {
+        Query query = milkRef.whereEqualTo(DATE, date).whereEqualTo(ANIMAL_ID, animalId);
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
-                MilkProduce produce = snapshot.toObject(MilkProduce.class);
-                if (produce != null){
-                    checkFields(produce);
-                } else {
-                    canAdd = true;
-                }
+                mProduce = snapshot.toObject(MilkProduce.class);
             }
+            checkFields(mProduce);
         });
     }
 
     private void checkFields(MilkProduce produce) {
-        mMrgQty = produce.getMrgQty();
-        mEvgQty = produce.getEvnQty();
-        canAdd = mMrgQty.equals("") || mEvgQty.equals("");
+        if (produce != null) {
+            mMrgQty = produce.getMrgQty();
+            mEvgQty = produce.getEvnQty();
+        } else {
+            Log.d(TAG, "checkFields: No produce added");
+        }
     }
 
     private void saveInfo(AlertDialog alertDialog) {
-        if (canAdd) {
-            String quantity = mQuantity.getText().toString();
-            if (timeOfDay != null) {
-                if (!quantity.isEmpty()) {
-                    if (timeOfDay.equals("Morning")) {
-                        submitMorningProduce(quantity, alertDialog, quantity);
-                    } else {
-                        submitAfternoonProduce(quantity, alertDialog);
-                    }
+        String quantity = mQuantity.getText().toString();
+        if (timeOfDay != null) {
+            if (!quantity.isEmpty()) {
+                if (timeOfDay.equals("Morning")) {
+                    submitMorningProduce(quantity, alertDialog, quantity);
                 } else {
-                    txtQuantity.setError("Please input quantity of milk produced first");
+                    submitAfternoonProduce(quantity, alertDialog);
                 }
             } else {
-                Toast.makeText(getContext(), "Time of day is required", Toast.LENGTH_SHORT).show();
+                txtQuantity.setError("Please input quantity of milk produced first");
             }
         } else {
-            mProgress.setVisibility(View.GONE);
-            mQuantity.setText("");
-            txtQuantity.setError("Can't enter more than 2 entries on the same day");
+            Toast.makeText(getContext(), "Time of day is required", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -176,24 +168,23 @@ public class MilkDialog extends AppCompatDialogFragment {
         Query query = milkRef.whereEqualTo(ANIMAL_ID, animalId).whereEqualTo(DATE, date);
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
-                MilkProduce produce = snapshot.toObject(MilkProduce.class);
-                getMorningQty(produce, quantity, alertDialog, quantity);
+                mProduce = snapshot.toObject(MilkProduce.class);
             }
+            getMorningQty(mProduce, quantity, alertDialog, quantity);
         });
     }
 
     private void getMorningQty(MilkProduce prod, String mQty, AlertDialog dialog, String totalQty) {
-        if (prod != null && !prod.getMrgQty().equals("")) {
-            String mrgQty = prod.getMrgQty();
-            float qty = Float.parseFloat(mrgQty);
-            sumAndSaveQty(qty, mQty, dialog, prod);
+        if (prod != null && !prod.getMrgQty().isEmpty()) {
+            float mgQty = Float.parseFloat(prod.getMrgQty());
+            sumAndSaveQty(mgQty, mQty, dialog, prod);
         } else {
             saveNewEntry(mQty, dialog, totalQty);
         }
     }
 
     private void saveNewEntry(String quantity, AlertDialog alertDialog, String totalQty) {
-        if (mEvgQty.equals("")){
+        if (mEvgQty == null || mEvgQty.isEmpty()) {
             saveProduce("", quantity, alertDialog, totalQty);
         } else {
             txtQuantity.setError("Produce for selected time already added");
@@ -201,9 +192,9 @@ public class MilkDialog extends AppCompatDialogFragment {
     }
 
     private void sumAndSaveQty(float qty, String quantity, AlertDialog dialog, MilkProduce produce) {
-        String produceId = produce.getProduceId();
-
         mProgress.setVisibility(View.VISIBLE);
+
+        String produceId = produce.getProduceId();
         float evQty = Float.parseFloat(quantity);
         float totalQty = qty + evQty;
         String finalQty = String.format(Locale.ENGLISH, "%.2f", totalQty);
@@ -211,41 +202,51 @@ public class MilkDialog extends AppCompatDialogFragment {
         Map<String, Object> map = new HashMap<>();
         map.put("evnQty", quantity);
         map.put("totalQty", finalQty);
-        milkRef.document(produceId).set(map, SetOptions.merge()).addOnSuccessListener(aVoid -> {
-            mProgress.setVisibility(View.GONE);
-            dialog.dismiss();
-        });
-    }
 
-    private void submitMorningProduce(String quantity, AlertDialog alertDialog, String totalQty) {
-        if (mMrgQty.equals("")){
-            saveProduce(quantity, "", alertDialog, totalQty);
+        if (mEvgQty.isEmpty()) {
+            milkRef.document(produceId).set(map, SetOptions.merge()).addOnSuccessListener(aVoid -> {
+                mProgress.setVisibility(View.GONE);
+                dialog.dismiss();
+            });
         } else {
+            mProgress.setVisibility(View.GONE);
             txtQuantity.setError("Produce for selected time already added");
         }
     }
 
+    private void submitMorningProduce(String quantity, AlertDialog alertDialog, String totalQty) {
+        if (mEvgQty == null || mEvgQty.isEmpty()) {
+            saveProduce(quantity, "", alertDialog, totalQty);
+        } else {
+            txtQuantity.setError("Can't add morning produce right now");
+        }
+    }
+
     private void saveProduce(String mrgQty, String evgQty, AlertDialog alertDialog, String totalQty) {
-        mProgress.setVisibility(View.VISIBLE);
-        MilkProduce produce = new MilkProduce(mMilkProdId, userId, animalId, animalName, mrgQty,
-                date, time, evgQty, totalQty);
-        milkRef.document(mMilkProdId).set(produce).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
+        if (mMrgQty == null || mMrgQty.isEmpty()){
+            mProgress.setVisibility(View.VISIBLE);
+            MilkProduce produce = new MilkProduce(mMilkProdId, userId, animalId, animalName, mrgQty,
+                    date, time, evgQty, totalQty);
+            milkRef.document(mMilkProdId).set(produce).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    mProgress.setVisibility(View.GONE);
+                    mQuantity.setText("");
+                    listener.notifyInput();
+                    alertDialog.dismiss();
+                } else {
+                    mProgress.setVisibility(View.GONE);
+                    mQuantity.setText("");
+                    Toast.makeText(getContext(), "An error occurred",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(e -> {
                 mProgress.setVisibility(View.GONE);
                 mQuantity.setText("");
-                listener.notifyInput();
-                alertDialog.dismiss();
-            } else {
-                mProgress.setVisibility(View.GONE);
-                mQuantity.setText("");
-                Toast.makeText(getContext(), "An error occurred",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(e -> {
-            mProgress.setVisibility(View.GONE);
-            mQuantity.setText("");
-            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        });
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+        } else {
+            txtQuantity.setError("Produce for selected time already added");
+        }
     }
 
     @Override
