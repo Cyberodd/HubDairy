@@ -28,6 +28,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -79,6 +80,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     private Button milkSale, animalSale;
     private TransInterface mTransInterface;
     private Animal mAnimal;
+    private MilkProduce mMilkProduce;
     private List<Animal> mAnimals;
     private List<Animal> allAnimals;
     private List<String> names;
@@ -202,7 +204,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
                 .set(map, SetOptions.merge()).addOnSuccessListener(aVoid -> {
             mProgress.setVisibility(View.GONE);
             dismiss();
-            mTransInterface.notifyInput("Animal transaction added");
+            mTransInterface.notifyAnimalSale("Transaction added");
         });
     }
 
@@ -251,33 +253,36 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     }
 
     private void checkQuantity(String transId, String date, String quantity) {
-        List<Float> floatList = new ArrayList<>();
-        for (int i = 0; i < mMilkProduces.size(); i++) {
-            String qty = mMilkProduces.get(i).getTotalQty();
-            float f = Float.parseFloat(qty);
-            floatList.add(f);
-        }
-        sumQuantities(floatList, transId, date, quantity);
+        Query query = milkRef.whereEqualTo(ANIMAL_ID, animalId).whereEqualTo(DATE, date);
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                mMilkProduce = snapshot.toObject(MilkProduce.class);
+            }
+            getRemQty(mMilkProduce, transId, date, quantity);
+        }).addOnFailureListener(e -> Log.d(TAG, "checkQuantity: error " + e));
     }
 
-    private void sumQuantities(List<Float> floatList, String transId, String date, String quantity) {
-        float totalQty = 0;
-        for (int i = 0; i < floatList.size(); i++) {
-            totalQty += floatList.get(i);
-        }
-        performCheck(totalQty, transId, date, quantity);
-    }
+    private void getRemQty(MilkProduce milkProduce, String transId, String date, String quantity) {
+        if (milkProduce != null) {
+            String rmQty = milkProduce.getRemQty();
+            String prodId = milkProduce.getProduceId();
+            float remQty = Float.parseFloat(rmQty);
+            float currQty = Float.parseFloat(quantity);
 
-    private void performCheck(float totalQty, String transId, String date, String quantity) {
-        float qty = Float.parseFloat(quantity);
-        if (qty <= totalQty) {
-            float totalCash = qty * PRICE_PER_LITRE;
-            txtQuantity.setError("");
-            String finalPrice = String.format(Locale.ENGLISH, "%.2f", totalCash);
-            fetchPrevTransactions(transId, date, quantity, finalPrice);
+            if (currQty <= remQty) {
+                float totalCash = currQty * PRICE_PER_LITRE;
+                String finalPrice = String.format(Locale.ENGLISH, "%.2f", totalCash);
+                if (!rmQty.equals("0.00")){
+                    fetchPrevTransactions(transId, date, quantity, finalPrice, remQty, currQty, prodId);
+                } else {
+                    txtQuantity.setError("Remaining quantity is 0.00 litres");
+                }
+            } else {
+                txtQuantity.setError(getString(R.string.totalQty_msg) + " " + rmQty + " litres");
+                Toast.makeText(getContext(), R.string.error_qty_info, Toast.LENGTH_SHORT).show();
+            }
         } else {
-            txtQuantity.setError("Total quantity produced today was " + totalQty + " litres");
-            Toast.makeText(getContext(), R.string.error_qty_info, Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "getRemQty: milk produce is empty");
         }
     }
 
@@ -303,7 +308,8 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         }
     }
 
-    private void fetchPrevTransactions(String transId, String date, String quantity, String cash) {
+    private void fetchPrevTransactions(String transId, String date, String quantity, String cash,
+                                       float remQty, float currQty, String prodId) {
         Query query = transRef.whereEqualTo(ANIMAL_ID, animalId)
                 .whereEqualTo(TYPE, mType)
                 .whereEqualTo(USER_ID, userId)
@@ -312,28 +318,29 @@ public class TransactionDialog extends AppCompatDialogFragment implements
             List<Transaction> transactions = new ArrayList<>();
             if (!queryDocumentSnapshots.isEmpty()) {
                 transactions = queryDocumentSnapshots.toObjects(Transaction.class);
-                getPrevTransId(transactions, transId, date, quantity, cash);
+                getPrevTransId(transactions, transId, date, quantity, cash, remQty, currQty, prodId);
             } else {
-                getPrevTransId(transactions, transId, date, quantity, cash);
+                getPrevTransId(transactions, transId, date, quantity, cash, remQty, currQty, prodId);
                 Log.d(TAG, "fetchPrevTransactions: No transactions yet");
             }
         });
     }
 
     private void getPrevTransId(List<Transaction> transactions, String transId, String date,
-                                String quantity, String cash) {
+                                String quantity, String cash, float remQty, float currQty,
+                                String prodId) {
         String prevTransId;
         if (!transactions.isEmpty()) {
             prevTransId = transactions.get(0).getTransId();
-            Log.d(TAG, "getPrevTransId: transId " + prevTransId);
-            doSubmit(transId, date, quantity, cash, prevTransId);
+            doSubmit(transId, date, quantity, cash, prevTransId, remQty, currQty, prodId);
         } else {
             prevTransId = "";
-            doSubmit(transId, date, quantity, cash, prevTransId);
+            doSubmit(transId, date, quantity, cash, prevTransId, remQty, currQty, prodId);
         }
     }
 
-    private void doSubmit(String transId, String date, String quantity, String cash, String prevTransId) {
+    private void doSubmit(String transId, String date, String quantity, String cash,
+                          String prevTransId, float remQty, float currQty, String prodId) {
         mProgress.setVisibility(View.VISIBLE);
         Transaction transaction = new Transaction(
                 transId, animalId, quantity, cash, mType, date, userId, time, prevTransId);
@@ -341,7 +348,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
             if (task.isSuccessful()) {
                 mProgress.setVisibility(View.GONE);
                 dismiss();
-                mTransInterface.notifyInput("Milk transaction added");
+                mTransInterface.notifyMilkSale(animalId, date, quantity, remQty, currQty, prodId);
             } else {
                 mProgress.setVisibility(View.GONE);
                 Toast.makeText(getContext(), "An error occurred", Toast.LENGTH_SHORT).show();
@@ -522,6 +529,9 @@ public class TransactionDialog extends AppCompatDialogFragment implements
 
     public interface TransInterface {
 
-        void notifyInput(String message);
+        void notifyMilkSale(String animalId, String date, String quantity, float remQty,
+                            float currQty, String produceId);
+
+        void notifyAnimalSale(String message);
     }
 }

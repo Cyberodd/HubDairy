@@ -1,6 +1,7 @@
 package com.hub.dairy.ui;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -135,6 +137,11 @@ public class ProgressActivity extends AppCompatActivity implements DatePickerDia
                 Calendar.getInstance().get(Calendar.MONTH),
                 Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
         );
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel),
+                (dialog1, which) -> {
+                    searchDate.setText("");
+                    loadAllReports();
+                });
         dialog.show();
     }
 

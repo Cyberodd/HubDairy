@@ -22,24 +22,33 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
 import com.hub.dairy.R;
 import com.hub.dairy.adapters.TabPagerAdapter;
 import com.hub.dairy.dialogs.MeatDialog;
 import com.hub.dairy.dialogs.MilkDialog;
-import com.hub.dairy.fragments.AnimalFragment;
 import com.hub.dairy.dialogs.TransactionDialog;
+import com.hub.dairy.fragments.AnimalFragment;
 import com.hub.dairy.fragments.TransactionFragment;
 import com.hub.dairy.helpers.TransactionEvent;
+import com.hub.dairy.models.MilkProduce;
 import com.hub.dairy.models.Transaction;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static com.hub.dairy.helpers.Constants.ANIMALS;
+import static com.hub.dairy.helpers.Constants.ANIMAL_ID;
+import static com.hub.dairy.helpers.Constants.DATE;
+import static com.hub.dairy.helpers.Constants.MILK_PRODUCE;
 import static com.hub.dairy.helpers.Constants.TIME;
 import static com.hub.dairy.helpers.Constants.TRANSACTIONS;
 import static com.hub.dairy.helpers.Constants.USER_ID;
@@ -57,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
     private FirebaseUser mUser;
     private FirebaseFirestore mDatabase;
     private String userId;
-    private CollectionReference transRef;
-    private List<Transaction> mTransactions = new ArrayList<>();
+    private CollectionReference transRef, milkRef;
+    private MilkProduce mMilkProduce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
         transRef = database.collection(TRANSACTIONS);
+        milkRef = mDatabase.collection(MILK_PRODUCE);
         if (mUser != null) {
             userId = mUser.getUid();
         } else {
@@ -93,6 +103,27 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
         mAddAnimal.setOnClickListener(v -> navigateToAddAnimal());
 
         mAddTransaction.setOnClickListener(v -> toTransaction());
+    }
+
+    private void listenForChanges() {
+        Query query = transRef.whereEqualTo(USER_ID, userId)
+                .orderBy(TIME, Query.Direction.DESCENDING);
+        query.addSnapshotListener(this, (queryDocumentSnapshots, e) -> {
+            if (e != null) {
+                Log.d(TAG, "listenForChanges: Error " + e);
+                return;
+            }
+            List<Transaction> transactions = new ArrayList<>();
+            if (queryDocumentSnapshots != null) {
+                for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                    Transaction transaction = snapshot.toObject(Transaction.class);
+                    transactions.add(transaction);
+                }
+                emitTransactions(transactions);
+            } else {
+                Log.d(TAG, "listenForChanges: Something went wrong");
+            }
+        });
     }
 
     private void toTransaction() {
@@ -183,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
         if (mUser == null) {
             toLoginActivity();
         } else {
-            Log.d(TAG, "onStart: User logged in");
+            listenForChanges();
         }
     }
 
@@ -193,30 +224,10 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
         finish();
     }
 
-    @Override
-    public void notifyInput(String message) {
-        Query query = transRef.whereEqualTo(USER_ID, userId);
-        query.orderBy(TIME, Query.Direction.DESCENDING)
-                .get().addOnSuccessListener(queryDocumentSnapshots -> {
-            if (!queryDocumentSnapshots.isEmpty()) {
-                mTransactions.clear();
-                mTransactions.addAll(queryDocumentSnapshots.toObjects(Transaction.class));
-                emitTransactions(mTransactions);
-            } else {
-                Log.d(TAG, "notifyInput: No transactions");
-            }
-        });
-    }
-
     private void emitTransactions(List<Transaction> transactions) {
         TransactionEvent event = new TransactionEvent();
         event.setTransactions(transactions);
         EventBus.getDefault().post(event);
-    }
-
-    @Override
-    public void notifyInput() {
-        Toast.makeText(this, "Produce added", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -226,8 +237,7 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
 
     private void removeAnimalFromDb(String animalId) {
         if (mUser != null) {
-            CollectionReference animalRef = mDatabase.collection(ANIMALS)
-                    .document(mUser.getUid()).collection(ANIMALS);
+            CollectionReference animalRef = mDatabase.collection(ANIMALS);
             animalRef.document(animalId).delete().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(this, "Produce added", Toast.LENGTH_SHORT).show();
@@ -238,5 +248,69 @@ public class MainActivity extends AppCompatActivity implements TransactionDialog
         } else {
             Log.d(TAG, "removeAnimalFromDb: User not logged in");
         }
+    }
+
+    @Override
+    public void notifyMilkSale(String animalId, String date, String quantity, float remQty,
+                               float currQty, String produceId) {
+        float updatedQty = remQty - currQty;
+        Map<String, Object> map = new HashMap<>();
+        map.put("remQty", String.format(Locale.ENGLISH, "%.2f", updatedQty));
+        milkRef.document(produceId)
+                .set(map, SetOptions.merge())
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(this, "Milk transaction added",
+                                Toast.LENGTH_SHORT).show());
+    }
+
+    @Override
+    public void notifyAnimalSale(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void notifyInput() {
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void notifyUpdateInput(String quantity, String date, String animalId) {
+        Query query = milkRef.whereEqualTo(ANIMAL_ID, animalId).whereEqualTo(DATE, date);
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                mMilkProduce = snapshot.toObject(MilkProduce.class);
+            }
+            getResponse(mMilkProduce, quantity);
+        });
+    }
+
+    private void getResponse(MilkProduce milkProduce, String quantity) {
+        if (milkProduce != null) {
+            String remQty = milkProduce.getRemQty();
+            String prodId = milkProduce.getProduceId();
+            checkRemQty(remQty, prodId, quantity);
+        } else {
+            Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void checkRemQty(String remQty, String prodId, String quantity) {
+        float finalQty = Float.parseFloat(remQty) + Float.parseFloat(quantity);
+        String fnQty = String.format(Locale.ENGLISH, "%.2f", finalQty);
+        if (remQty.equals("0.00")) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("remQty", quantity);
+            milkRef.document(prodId).set(map, SetOptions.merge()).addOnSuccessListener(aVoid ->
+                    showToast());
+        } else {
+            Map<String, Object> map = new HashMap<>();
+            map.put("remQty", fnQty);
+            milkRef.document(prodId).set(map, SetOptions.merge()).addOnSuccessListener(aVoid ->
+                    showToast());
+        }
+    }
+
+    private void showToast() {
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
     }
 }

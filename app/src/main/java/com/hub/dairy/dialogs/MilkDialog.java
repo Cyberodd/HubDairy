@@ -206,6 +206,7 @@ public class MilkDialog extends AppCompatDialogFragment {
         if (mEvgQty.isEmpty()) {
             milkRef.document(produceId).set(map, SetOptions.merge()).addOnSuccessListener(aVoid -> {
                 mProgress.setVisibility(View.GONE);
+                listener.notifyUpdateInput(quantity, date, animalId);
                 dialog.dismiss();
             });
         } else {
@@ -226,7 +227,7 @@ public class MilkDialog extends AppCompatDialogFragment {
         if (mMrgQty == null || mMrgQty.isEmpty()){
             mProgress.setVisibility(View.VISIBLE);
             MilkProduce produce = new MilkProduce(mMilkProdId, userId, animalId, animalName, mrgQty,
-                    date, time, evgQty, totalQty);
+                    date, time, evgQty, totalQty, totalQty);
             milkRef.document(mMilkProdId).set(produce).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     mProgress.setVisibility(View.GONE);
@@ -261,5 +262,7 @@ public class MilkDialog extends AppCompatDialogFragment {
 
     public interface MilkInterface {
         void notifyInput();
+
+        void notifyUpdateInput(String quantity, String date, String animalId);
     }
 }
