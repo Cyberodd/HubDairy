@@ -104,6 +104,7 @@
                             android:layout_height="wrap_content"
                             android:inputType="text"
                             android:enabled="false"
+                            android:textSize="12sp"
                             android:hint="@string/name"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
@@ -145,6 +146,7 @@
                             android:layout_height="wrap_content"
                             android:inputType="text"
                             android:enabled="false"
+                            android:textSize="12sp"
                             android:hint="@string/phone"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
@@ -186,6 +188,7 @@
                             android:inputType="text"
                             android:enabled="false"
                             android:focusable="false"
+                            android:textSize="12sp"
                             android:hint="@string/email"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
@@ -227,6 +230,7 @@
                             android:layout_height="wrap_content"
                             android:inputType="text"
                             android:enabled="false"
+                            android:textSize="12sp"
                             android:hint="@string/farm_name"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
