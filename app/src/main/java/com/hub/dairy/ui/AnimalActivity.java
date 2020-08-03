@@ -69,7 +69,7 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
     private RadioButton mRdMale, mRdFemale;
     private int IMAGE_REQUEST_CODE = 1001;
     private LinearLayout displayText;
-    private StorageReference mStorageReference;
+    private StorageReference mStorageReference = FirebaseStorage.getInstance().getReference(UPLOADS);
     private CollectionReference colRef, mCategoryRef;
     private ProgressBar mProgress;
     private Uri imageUri;
@@ -85,7 +85,6 @@ public class AnimalActivity extends AppCompatActivity implements CategoryDialog.
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        mStorageReference = FirebaseStorage.getInstance().getReference(UPLOADS);
         mCategoryRef = database.collection(CATEGORIES);
 
         if (user != null) {

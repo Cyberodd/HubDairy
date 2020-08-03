@@ -34,6 +34,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.hub.dairy.R;
+import com.hub.dairy.RetrofitInterface;
 import com.hub.dairy.models.Animal;
 import com.hub.dairy.models.MilkProduce;
 import com.hub.dairy.models.Transaction;
@@ -47,6 +48,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.hub.dairy.helpers.Constants.ANIMALS;
 import static com.hub.dairy.helpers.Constants.ANIMAL_ID;
@@ -87,6 +92,10 @@ public class TransactionDialog extends AppCompatDialogFragment implements
     private List<String> allAnimalNames;
     private List<MilkProduce> mMilkProduces;
 
+    private Retrofit retrofit;
+    private RetrofitInterface retrofitInterface;
+    private String BASE_URL = "http://10.0.2.2:3000";
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -103,6 +112,13 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        retrofitInterface = retrofit.create(RetrofitInterface.class);
 
         today = new SimpleDateFormat(SHORT_DATE, Locale.getDefault()).format(new Date());
         time = new SimpleDateFormat(LONG_DATE, Locale.getDefault()).format(new Date());
@@ -129,11 +145,32 @@ public class TransactionDialog extends AppCompatDialogFragment implements
             });
         });
 
-        milkSale.setOnClickListener(v -> submitSale());
+        milkSale.setOnClickListener(v -> submitSale());{
+
+                HashMap<String, String> map = new HashMap<>();
+
+        map.put("transID", transRef.toString());
+        map.put("date", inputDate.getText().toString());
+        map.put("Amount", inputCash.getText().toString());
+        map.put("quantity", inputQuantity.getText().toString());
+
+        Call<com.google.firebase.firestore.Transaction> call = retrofitInterface.executeTransaction(map);
+
+        }
 
         inputDate.setOnClickListener(v -> openCalendar());
 
-        animalSale.setOnClickListener(v -> saleAnimal());
+        animalSale.setOnClickListener(v -> saleAnimal());{
+            HashMap<String, String> map = new HashMap<>();
+
+            map.put("tranID", transRef.toString());
+            map.put("date", inputDate.getText().toString());
+            map.put("Amount", inputCash.getText().toString());
+            map.put("quantity", inputQuantity.getText().toString());
+
+            Call<com.google.firebase.firestore.Transaction> call = retrofitInterface.executeTransaction(map);
+
+        };
 
         Objects.requireNonNull(alertDialog.getWindow()).setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
@@ -172,6 +209,14 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         } else {
             textAnimal.setError("Animal name required");
         }
+        HashMap<String, String> map = new HashMap<>();
+
+        map.put("transID", transRef.toString());
+        map.put("date", inputDate.getText().toString());
+        map.put("Amount", inputCash.getText().toString());
+        map.put("quantity", inputQuantity.getText().toString());
+
+        Call<com.google.firebase.firestore.Transaction> call = retrofitInterface.executeTransaction(map);
     }
 
     private void validateAllAnimalNames() {
@@ -186,7 +231,7 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         String quantity = "1";
         mProgress.setVisibility(View.VISIBLE);
         Transaction transaction =
-                new Transaction(transId, animalId, quantity, cash, mType, date, userId, time, "");
+                new Transaction(transId, animalId, quantity, cash, mType, date, userId, time);
         transRef.document(transId).set(transaction).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 setAvailability(animalId);
@@ -332,18 +377,17 @@ public class TransactionDialog extends AppCompatDialogFragment implements
         String prevTransId;
         if (!transactions.isEmpty()) {
             prevTransId = transactions.get(0).getTransId();
-            doSubmit(transId, date, quantity, cash, prevTransId, remQty, currQty, prodId);
+            doSubmit(transId, date, quantity, cash, remQty, currQty, prodId);
         } else {
             prevTransId = "";
-            doSubmit(transId, date, quantity, cash, prevTransId, remQty, currQty, prodId);
+            doSubmit(transId, date, quantity, cash, remQty, currQty, prodId);
         }
     }
 
-    private void doSubmit(String transId, String date, String quantity, String cash,
-                          String prevTransId, float remQty, float currQty, String prodId) {
+    private void doSubmit(String transId, String date, String quantity, String cash, float remQty, float currQty, String prodId) {
         mProgress.setVisibility(View.VISIBLE);
         Transaction transaction = new Transaction(
-                transId, animalId, quantity, cash, mType, date, userId, time, prevTransId);
+                transId, animalId, quantity, cash, mType, date, userId, time);
         transRef.document(transId).set(transaction).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 mProgress.setVisibility(View.GONE);

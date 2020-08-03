@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dairy</string>
+    <string name="app_name">FarmHub Dairy</string>
     <string name="title_activity_test">test</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
@@ -16,7 +16,7 @@
     <string name="label_male">Male</string>
     <string name="label_select_image">Select Image</string>
     <string name="animal_name">Animal Name</string>
-    <string name="enter_animal_name">Enter Animal Name</string>
+    <string name="enter_animal_name">Enter Animal Name/Animal ID</string>
     <string name="animal_breed">Animal Breed</string>
     <string name="enter_breed">Enter Animal Breed</string>
     <string name="location">Current Animal Location</string>
